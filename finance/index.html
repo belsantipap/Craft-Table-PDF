@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Basic Finance สำหรับฝ่ายผลิต — บทเรียนปูพื้น</title>
+<style>
+:root{
+  --red:#d8232a; --red-d:#a8151b; --red-l:#fdecec;
+  --ink:#1f2328; --ink2:#4a5058; --mute:#7a828c;
+  --bg:#f6f5f3; --card:#ffffff; --line:#e4e1dc;
+  --ok:#1f7a4d; --ok-l:#e6f4ec; --bad:#b42318; --bad-l:#fdecea;
+  --blue:#245c9e; --blue-l:#eaf1fa; --amber:#9a6200; --amber-l:#fff4dc;
+  --r:12px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Sarabun","Noto Sans Thai","Leelawadee UI","Leelawadee","Tahoma",system-ui,sans-serif;
+  color:var(--ink);background:var(--bg);font-size:16.5px;line-height:1.7}
+a{color:var(--blue)}
+.top{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:14px;padding:10px 18px}
+.top .brand{font-weight:700;color:var(--red);white-space:nowrap}
+.top .brand span{color:var(--ink);font-weight:600}
+.top .prog{flex:1;display:flex;align-items:center;gap:10px;min-width:0}
+.bar{flex:1;height:8px;background:#eee;border-radius:99px;overflow:hidden;max-width:360px}
+.bar i{display:block;height:100%;background:var(--red);width:0;transition:width .4s}
+.top small{color:var(--mute);white-space:nowrap}
+.menu-btn{display:none;border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;font:inherit;cursor:pointer}
+.wrap{display:flex;max-width:1280px;margin:0 auto}
+nav.side{width:300px;flex:none;padding:16px 12px 40px;position:sticky;top:53px;height:calc(100vh - 53px);overflow:auto;border-right:1px solid var(--line)}
+nav.side a{display:flex;gap:10px;align-items:flex-start;text-decoration:none;color:var(--ink2);padding:8px 10px;border-radius:9px;font-size:15px;line-height:1.45}
+nav.side a:hover{background:#efece8}
+nav.side a.on{background:var(--red-l);color:var(--red-d);font-weight:600}
+nav.side .n{flex:none;width:26px;height:26px;border-radius:50%;border:1.5px solid #cfcac3;display:grid;place-items:center;font-size:12.5px;font-weight:700;color:var(--mute);background:#fff}
+nav.side a.done .n{background:var(--ok);border-color:var(--ok);color:#fff}
+nav.side .grp{font-size:12px;letter-spacing:.06em;color:var(--mute);text-transform:uppercase;margin:16px 10px 6px;font-weight:700}
+main{flex:1;min-width:0;padding:26px 34px 80px}
+.page{max-width:860px}
+h1{font-size:30px;line-height:1.3;margin:0 0 6px}
+h2{font-size:22px;margin:34px 0 10px;padding-top:6px}
+h3{font-size:18px;margin:22px 0 6px}
+p{margin:8px 0}
+.kicker{color:var(--red);font-weight:700;font-size:14px;letter-spacing:.05em}
+.lead{color:var(--ink2);font-size:17.5px}
+.meta{color:var(--mute);font-size:14px;margin:4px 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;margin:14px 0}
+.box{border-radius:var(--r);padding:12px 16px;margin:14px 0;border-left:4px solid}
+.box.fruit{background:var(--amber-l);border-color:#e0a530}
+.box.work{background:var(--blue-l);border-color:var(--blue)}
+.box.memo{background:var(--red-l);border-color:var(--red)}
+.box.warn{background:#f3f1ee;border-color:#9a948b}
+.box b.t{display:block;margin-bottom:2px}
+.box ul,.box ol{margin:4px 0 2px;padding-left:22px}
+ul,ol{padding-left:24px}
+li{margin:3px 0}
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:15px;background:#fff}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:#f1eeea;font-weight:700}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.sum td{font-weight:700;background:#faf8f5}
+.tbl{overflow-x:auto}
+code,.mono{font-family:Consolas,"Courier New",monospace;font-size:.93em;background:#f1eeea;padding:1px 5px;border-radius:5px}
+.formula{background:#fff;border:1px dashed #c9c2b8;border-radius:10px;padding:10px 14px;margin:12px 0;font-weight:600;text-align:center;line-height:1.9}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 7px;border-radius:99px;margin-left:4px;vertical-align:1px}
+.tag.v{background:#e8f0fb;color:var(--blue)} .tag.f{background:#f0ebe4;color:#6b5a44} .tag.m{background:var(--red-l);color:var(--red-d)}
+/* flow */
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch;margin:14px 0}
+.flow .s{flex:1 1 120px;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;font-size:14px;line-height:1.4;position:relative}
+.flow .s b{display:block;font-size:14.5px;color:var(--ink)}
+.flow .s.main{border-color:var(--red)}
+.flow .s.dist{border-style:dashed}
+.flow .s em{font-style:normal;color:var(--mute);font-size:12.5px}
+.flow .ar{align-self:center;color:var(--mute);font-weight:700}
+.tiers{display:grid;gap:10px;margin:14px 0}
+.tier{border-radius:10px;padding:10px 14px;border:1.5px solid}
+.tier.pre{border-color:#e0a530;background:#fffaf0}
+.tier.aux{border-color:var(--blue);background:#f6f9fe}
+.tier.mn{border-color:var(--red);background:#fff7f7}
+.tier .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{background:#fff;border:1px solid var(--line);border-radius:99px;padding:2px 10px;font-size:13.5px}
+.down{text-align:center;color:var(--mute);font-size:14px}
+/* waterfall */
+.wf{margin:12px 0}
+.wf .row{display:flex;align-items:center;gap:10px;margin:4px 0;font-size:14.5px}
+.wf .lab{width:190px;flex:none}
+.wf .track{flex:1;position:relative;height:22px;background:#f3f1ee;border-radius:5px}
+.wf .seg{position:absolute;top:0;height:100%;border-radius:5px}
+.wf .val{width:80px;text-align:right;font-variant-numeric:tabular-nums;flex:none}
+/* quiz */
+.quiz{margin-top:34px;border-top:2px solid var(--line);padding-top:10px}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.q{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin:12px 0}
+.q .qt{font-weight:600;margin-bottom:8px}
+.q .qn{color:var(--red);font-weight:700;margin-right:4px}
+.opt{display:block;width:100%;text-align:left;font:inherit;background:#fbfaf8;border:1.5px solid var(--line);border-radius:9px;padding:8px 12px;margin:6px 0;cursor:pointer;line-height:1.5}
+.opt:hover:not([disabled]){border-color:#bdb5aa;background:#fff}
+.opt[disabled]{cursor:default;color:var(--ink);opacity:1}
+.opt[disabled]:not(.right):not(.wrong){color:var(--ink2)}
+.opt.right{border-color:var(--ok);background:var(--ok-l)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-l)}
+.exp{display:none;margin-top:8px;padding:9px 12px;border-radius:9px;background:#f6f4f1;font-size:15px}
+.exp.show{display:block}
+.exp b.ok{color:var(--ok)} .exp b.no{color:var(--bad)}
+.result{border-radius:var(--r);padding:16px 18px;margin:16px 0;font-size:17px}
+.result.pass{background:var(--ok-l);border:1.5px solid var(--ok)}
+.result.fail{background:var(--amber-l);border:1.5px solid #e0a530}
+.btn{display:inline-block;font:inherit;font-weight:600;border:0;border-radius:9px;padding:9px 16px;cursor:pointer;background:var(--red);color:#fff;text-decoration:none}
+.btn:hover{background:var(--red-d)}
+.btn.ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.btn.ghost:hover{border-color:#bdb5aa;background:#fff}
+.navrow{display:flex;justify-content:space-between;gap:10px;margin-top:30px;flex-wrap:wrap}
+/* home */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin:14px 0}
+.tile{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;text-decoration:none;color:var(--ink);display:block}
+.tile:hover{border-color:#bdb5aa}
+.tile .no{font-size:12.5px;font-weight:700;color:var(--red)}
+.tile .tt{font-weight:700;line-height:1.4;margin:2px 0}
+.tile .st{font-size:13.5px;color:var(--mute)}
+.tile.done{border-color:var(--ok);background:#f7fcf9}
+.tile.done .st{color:var(--ok);font-weight:600}
+.plan td:first-child{white-space:nowrap}
+/* glossary */
+.gsearch{width:100%;font:inherit;padding:9px 12px;border:1.5px solid var(--line);border-radius:9px;background:#fff}
+.flash{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:14px}
+.fc{background:#fff;border:1.5px solid var(--line);border-radius:var(--r);padding:12px 14px;cursor:pointer;min-height:96px;user-select:none}
+.fc .term{font-weight:700;color:var(--ink)}
+.fc .mean{display:none;font-size:14.5px;color:var(--ink2);margin-top:6px}
+.fc.open{border-color:var(--red)}
+.fc.open .mean{display:block}
+.fc .hint{font-size:12px;color:var(--mute);margin-top:6px}
+.fc.open .hint{display:none}
+.toggle-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+@media (max-width:900px){
+  .menu-btn{display:inline-block}
+  nav.side{position:fixed;left:0;top:53px;bottom:0;height:auto;background:var(--bg);z-index:30;transform:translateX(-105%);transition:transform .2s;box-shadow:4px 0 20px rgba(0,0,0,.08)}
+  nav.side.open{transform:none}
+  main{padding:18px 16px 70px}
+  h1{font-size:25px}
+  .wf .lab{width:120px;font-size:13px}
+  .top small{display:none}
+  .top .brand span{display:none}
+  .top{gap:10px;padding:10px 12px}
+}
+</style>
+</head>
+<body>
+<div class="top">
+  <button class="menu-btn" id="menuBtn" aria-label="เมนู">☰ บทเรียน</button>
+  <div class="brand">Basic Finance <span>สำหรับฝ่ายผลิต</span></div>
+  <div class="prog"><div class="bar"><i id="barFill"></i></div><small id="progTxt"></small></div>
+</div>
+<div class="wrap">
+  <nav class="side" id="side"></nav>
+  <main><div class="page" id="view"></div></main>
+</div>
+
+<script>
+/* =========================================================
+   CONTENT
+   ========================================================= */
+const CH = [
+/* ---------------- บทที่ 0 ---------------- */
+{ id:'c0', title:'ภาพรวม: เงินไหลตามปูน', min:20,
+  body:`
+<p class="lead">ก่อนจะจำศัพท์ทีละคำ ให้เห็นภาพใหญ่ก่อนว่า ฝ่ายบัญชีมอง "โรงงานปูน" อย่างไร</p>
+
+<h2>1. ทุกบาทที่จ่าย ต้องตอบ 3 คำถาม</h2>
+<div class="card">
+<ol>
+<li><b>จ่ายที่ไหน / ของหน่วยงานไหน?</b> → <b>Cost Center</b> (ตะกร้า)</li>
+<li><b>จ่ายเป็นค่าอะไร?</b> → <b>Type of cost</b> หรือใน SAP เรียก <b>Cost Element</b> (ผลไม้)</li>
+<li><b>คิดเป็นเงินกี่บาทต่อปูน 1 ตัน?</b> → <b>Cost per ton</b> (รายงาน <b>15A</b>)</li>
+</ol>
+</div>
+<p>ข้อ 1 กับ 2 คือพื้นฐานที่ใช้บันทึกบัญชีทุกวัน ข้อ 3 คือ "ปลายทาง" ที่ผู้บริหารดู เพราะใช้เทียบได้ว่าโรงงานไหน เดือนไหน ทำปูนได้ถูกหรือแพง ไม่ว่าจะผลิตมากหรือน้อย</p>
+
+<h2>2. กระบวนการผลิต = เส้นทางของเงิน</h2>
+<p>บัญชีแบ่งโรงงานตามขั้นตอนการผลิตจริง ขั้นตอนหลักมี 5 ขั้น แต่ละขั้นคือ <b>Main cost center</b> 1 ตะกร้า</p>
+<div class="flow">
+  <div class="s main"><b>1. Raw material extraction</b>ระเบิด/ขุดหินที่ Quarry<br><em>ขุด</em></div><div class="ar">→</div>
+  <div class="s main"><b>2. Raw material preparation</b>ย่อยหิน (Crusher) กองสต็อก<br><em>ย่อย</em></div><div class="ar">→</div>
+  <div class="s main"><b>3. Raw meal preparation</b>บดผสมเป็นผงวัตถุดิบ (Raw mill)<br><em>บด</em></div><div class="ar">→</div>
+  <div class="s main"><b>4. Clinker production</b>เผาใน Kiln ได้ปูนเม็ด (Clinker)<br><em>เผา</em></div><div class="ar">→</div>
+  <div class="s main"><b>5. Cement grinding / blending</b>บด Clinker + ยิปซัม ฯลฯ เป็นปูน<br><em>บดปูน</em></div><div class="ar">→</div>
+  <div class="s dist"><b>Shipping station</b>บรรจุ/ส่งออก<br><em>ไม่ใช่ฝ่ายผลิต (Distribution)</em></div>
+</div>
+<div class="box memo"><b class="t">🧠 ท่องจำ 5 ตะกร้าหลัก</b>
+"<b>ขุด → ย่อย → บด → เผา → บดปูน</b>" แล้วจบที่ Shipping ซึ่งเป็นของฝ่ายขนส่ง ไม่ใช่ของฝ่ายผลิต</div>
+
+<h2>3. โรงงานมีหลายฝ่าย ไม่ได้มีแค่ "ผลิต"</h2>
+<p>ในมาตรฐาน HARP บริษัทแบ่งเป็น <b>Function</b> (ฝ่ายที่ทำของออกมา เช่น Production, Distribution) และ <b>Support processes</b> (ฝ่ายสนับสนุน) ซึ่งมี 4 กลุ่ม</p>
+<div class="tbl"><table>
+<tr><th>Support process</th><th>ทำอะไร</th></tr>
+<tr><td>Corporate Manufacturing</td><td>สนับสนุนการผลิตจากส่วนกลาง เช่น Engineering, R&D, Technical support, Environmental affairs, Quality management ระดับบริษัท</td></tr>
+<tr><td>Corporate Logistics</td><td>วางแผน/ควบคุมงานขนส่งระดับบริษัท</td></tr>
+<tr><td>Marketing and Sales</td><td>ฝ่ายขาย, Technical customer support, market research</td></tr>
+<tr><td>Administration</td><td>มี 5 Main cost center: General management, Finance and controlling, Human resources, Information services, Purchasing</td></tr>
+</table></div>
+<p>บทเรียนนี้โฟกัสที่ <b>Production (Clinker and Cement)</b> ก่อน</p>
+
+<h2>4. HARP คืออะไร ทำไมต้องรู้</h2>
+<p><b>HARP</b> (Holcim Accounting and Reporting Principles) คือ "คู่มือกติกากลาง" ที่เอกสารอบรมนี้ใช้ ก่อนปี 2001 แต่ละประเทศทำบัญชีคนละแบบ เทียบกันไม่ได้ HARP จึงกำหนดให้ทุกโรงงาน:</p>
+<ul>
+<li>แบ่ง cost center และ type of cost แบบเดียวกัน</li>
+<li>ใช้หลักบัญชีตาม <b>IFRS</b></li>
+<li>มีตัวชี้วัดกลาง ทั้งการเงิน (เช่น EBITDA) และไม่ใช่การเงิน (เช่น OEE, kWh/t)</li>
+<li>รายงานในรูปแบบมาตรฐาน เช่น <b>GMR</b> (General Management Report)</li>
+</ul>
+
+<h2>5. ลำดับชั้นของ Cost center</h2>
+<p>ตะกร้าแต่ละใบถูกจัดเป็นลำดับชั้น (hierarchy) แบบนี้</p>
+<div class="card" style="font-size:15px;line-height:1.9">
+Group reporting unit (บริษัท)<br>
+└ Product segment (เช่น Cementitious materials)<br>
+&nbsp;&nbsp;└ Product sub-segment (เช่น <b>Clinker and Cement</b>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;└ Function (เช่น <b>Production</b>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└ Plant (เช่น Plant A)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└ Type of cost center (Main / Auxiliary / Pre-process)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└ Cost center name (เช่น Raw meal preparation)
+</div>
+
+<div class="box warn"><b class="t">หมายเหตุเรื่องแหล่งข้อมูล</b>
+เนื้อหาทั้งหมดมาจากเอกสารอบรม "Basic Finance for cement manufacturing" (ตัวอย่างตัวเลขส่วนใหญ่เป็น USD ของ Holcim) ชื่อเรียก รหัส หรือสัดส่วนที่ INSEE ใช้จริงตอนนี้อาจต่างไปบ้าง ถ้าจะใช้กับงานจริง ให้เช็กกับฝ่าย Controlling ของโรงงานอีกครั้ง</div>
+`,
+  quiz:[
+    {q:'ในการบันทึกค่าใช้จ่าย 1 รายการ "Cost center" ตอบคำถามข้อใด',o:['จ่ายเป็นค่าอะไร','จ่ายที่หน่วยงาน/ขั้นตอนไหน','จ่ายเมื่อไหร่','จ่ายให้ใคร'],a:1,e:'Cost center คือ "ตะกร้า" บอกว่าค่าใช้จ่ายนี้เป็นของหน่วยงาน/ขั้นตอนไหน ส่วน "จ่ายเป็นค่าอะไร" คือ Type of cost / Cost element'},
+    {q:'ข้อใดเรียงลำดับ 5 Main cost center ของฝ่ายผลิตได้ถูกต้อง',o:['Raw material extraction → Raw material preparation → Raw meal preparation → Clinker production → Cement grinding/blending','Raw meal preparation → Raw material extraction → Clinker production → Cement grinding → Shipping','Raw material extraction → Clinker production → Raw meal preparation → Cement grinding → Shipping','Quarry → Kiln → Raw mill → Cement mill → Packing'],a:0,e:'จำว่า "ขุด → ย่อย → บด → เผา → บดปูน" Shipping ไม่ใช่ Main cost center ของฝ่ายผลิต'},
+    {q:'Shipping station (บรรจุ/ส่งปูน) อยู่ในฝ่ายใด',o:['Production','Distribution','Administration','Corporate Manufacturing'],a:1,e:'Shipping station เป็นของ Distribution ไม่ใช่ Production ดังนั้นต้นทุนบรรจุถุง/ส่งของจะไม่อยู่ในต้นทุนผลิตต่อตัน'},
+    {q:'ข้อใดไม่ใช่หนึ่งใน 5 Main cost center ของ Administration',o:['Finance and controlling','Human resources','Purchasing','Quality control and laboratory'],a:3,e:'Administration มี General management, Finance and controlling, Human resources, Information services, Purchasing ส่วน Quality control and laboratory เป็น Auxiliary cost center ของฝ่ายผลิต'},
+    {q:'จุดประสงค์หลักของ HARP คืออะไร',o:['ลดภาษีของบริษัท','ให้ทุกโรงงานในกลุ่มบันทึกและรายงานแบบเดียวกัน เพื่อเทียบกันได้','ใช้แทนระบบ SAP','ใช้คำนวณเงินเดือนพนักงาน'],a:1,e:'ก่อนมี HARP แต่ละประเทศทำบัญชีคนละแบบ เทียบกันไม่ได้ HARP เป็นภาษากลาง ตาม IFRS พร้อมตัวชี้วัดและรายงานมาตรฐาน (เช่น GMR)'},
+    {q:'"Cost per ton" มีประโยชน์ที่สุดเพราะอะไร',o:['ทำให้ตัวเลขดูน้อยลง','เทียบประสิทธิภาพต้นทุนได้ แม้ปริมาณผลิตแต่ละเดือน/โรงงานจะไม่เท่ากัน','ใช้แทนงบประมาณได้','ใช้คำนวณราคาขายโดยตรง'],a:1,e:'ต้นทุนรวมจะสูงขึ้นตามปริมาณผลิตเสมอ การหารด้วยตันทำให้เทียบได้ยุติธรรมระหว่างเดือนหรือระหว่างโรงงาน'}
+  ]},
+
+/* ---------------- บทที่ 1 ---------------- */
+{ id:'c1', title:'Cost Center: ตะกร้า 3 ชนิด', min:30,
+  body:`
+<p class="lead">ให้นึกภาพว่า Cost center คือ "ตะกร้า" และ Cost element คือ "ผลไม้" ในตะกร้า บทนี้จะบอกว่าตะกร้าในฝ่ายผลิตมี 3 ชนิด และแต่ละชนิดมีหน้าที่ต่างกัน</p>
+
+<h2>1. นิยาม</h2>
+<p><b>Cost center</b> = "<i>cost collector</i>" ตัวเก็บรวบรวมต้นทุน ใช้เก็บต้นทุนหลาย ๆ Type of cost ไว้ด้วยกัน เพื่อให้รู้ว่าแต่ละพื้นที่/กิจกรรมใช้เงินไปเท่าไหร่</p>
+
+<h2>2. ตะกร้า 3 ชนิดในฝ่ายผลิต</h2>
+<div class="tiers">
+  <div class="tier pre"><b>Pre-process cost centers (7)</b> — ตะกร้าเตรียมวัตถุดิบเฉพาะทาง แล้วส่งต่อให้ Main cost center ที่รับของไปใช้
+    <div class="chips">
+      <span class="chip">Alternative raw materials prep. & handling</span>
+      <span class="chip">Correctives prep. & handling</span>
+      <span class="chip">Power generation</span>
+      <span class="chip">Traditional fuels prep. & handling</span>
+      <span class="chip">Alternative fuels prep. & handling</span>
+      <span class="chip">Gypsum and additives prep. & handling</span>
+      <span class="chip">Mineral components prep. & handling</span>
+    </div></div>
+  <div class="tier aux"><b>Auxiliary cost centers (12)</b> — ตะกร้างานสนับสนุนภายในโรงงาน ใช้ร่วมกันทุกขั้นตอน แล้วแบ่งเข้า Main cost center
+    <div class="chips">
+      <span class="chip">Infrastructure</span><span class="chip">Plant management</span><span class="chip">General plant services</span>
+      <span class="chip">Electric power and control</span><span class="chip">Parts and supplies management</span>
+      <span class="chip">Plant maintenance and workshops</span><span class="chip">Quality control and laboratory</span>
+      <span class="chip">Mobile equipment maintenance / garage</span><span class="chip">Water supply / treatment / distribution</span>
+      <span class="chip">Sewage treatment (plant)</span><span class="chip">Solid waste disposal</span><span class="chip">Railway traffic infrastructure (at plant)</span>
+    </div></div>
+  <div class="down">▼ ทั้งหมดไหลลงไปรวมที่ ▼</div>
+  <div class="tier mn"><b>Main cost centers (5)</b> — ตะกร้าหลัก = ขั้นตอนผลิตจริง ใช้คำนวณต้นทุนต่อตัน
+    <div class="chips">
+      <span class="chip">Raw material extraction</span><span class="chip">Raw material preparation</span>
+      <span class="chip">Raw meal preparation</span><span class="chip">Clinker production</span><span class="chip">Cement grinding / blending</span>
+    </div></div>
+</div>
+
+<div class="box fruit"><b class="t">🧺 ภาพตะกร้าผลไม้</b>
+<ul>
+<li><b>Main</b> = ตะกร้าปลายทาง 5 ใบที่เอาไปชั่งว่า "ผลไม้ทั้งหมดหนักเท่าไหร่ต่อปูน 1 ตัน"</li>
+<li><b>Auxiliary</b> = ตะกร้ากองกลางของโรงงาน พอครบเดือนก็ "เท" แบ่งใส่ตะกร้าหลัก</li>
+<li><b>Pre-process</b> = ตะกร้าเตรียมของเฉพาะอย่าง (เช่น เตรียมถ่านหิน) แล้วเทให้ตะกร้าที่ใช้ของนั้นจริง</li>
+</ul></div>
+
+<h2>3. จำ 7 Pre-process ให้ง่าย: แบ่ง 3 กลุ่ม</h2>
+<div class="tbl"><table>
+<tr><th>กลุ่ม</th><th>Pre-process cost center</th><th>ตัวอย่าง</th></tr>
+<tr><td rowspan="2"><b>ฝั่งวัตถุดิบ</b> (2)</td><td>Alternative raw materials prep. & handling</td><td>วัตถุดิบทดแทน เช่น ของเสียที่ใช้แทนดิน/หิน</td></tr>
+<tr><td>Correctives prep. & handling</td><td>สารปรับส่วนผสม เช่น แร่เหล็ก, ทราย</td></tr>
+<tr><td rowspan="3"><b>ฝั่งพลังงาน</b> (3)</td><td>Power generation</td><td>โรงไฟฟ้าของโรงงานเอง (ถ้ามี)</td></tr>
+<tr><td>Traditional fuels prep. & handling</td><td>บด/ขนถ่านหิน (เชื้อเพลิงดั้งเดิม)</td></tr>
+<tr><td>Alternative fuels prep. & handling</td><td>เตรียมเชื้อเพลิงทดแทน เช่น RDF, ยางรถ, biomass</td></tr>
+<tr><td rowspan="2"><b>ฝั่งปูน</b> (2)</td><td>Gypsum and additives prep. & handling</td><td>ยิปซัม สารเติมแต่ง</td></tr>
+<tr><td>Mineral components prep. & handling</td><td>slag, fly ash ที่ผสมในปูน</td></tr>
+</table></div>
+<div class="box memo"><b class="t">🧠 ท่องจำ</b> Pre-process = "<b>ดิน 2 · ไฟ 3 · ปูน 2</b>"</div>
+
+<h2>4. จำ 12 Auxiliary ให้ง่าย: แบ่ง 4 กลุ่ม</h2>
+<div class="tbl"><table>
+<tr><th>กลุ่ม</th><th>Auxiliary cost center</th></tr>
+<tr><td><b>บริหาร & ส่วนกลาง</b></td><td>Plant management · General plant services · Infrastructure</td></tr>
+<tr><td><b>ซ่อมบำรุง & อะไหล่</b></td><td>Plant maintenance and workshops · Parts and supplies management · Mobile equipment maintenance/garage</td></tr>
+<tr><td><b>ไฟฟ้า & คุณภาพ</b></td><td>Electric power and control · Quality control and laboratory</td></tr>
+<tr><td><b>สาธารณูปโภค</b></td><td>Water supply/treatment/distribution · Sewage treatment · Solid waste disposal · Railway traffic infrastructure</td></tr>
+</table></div>
+
+<h2>5. กติกาการเปิดตะกร้า</h2>
+<ul>
+<li><b>Main cost center</b>: ต้องมีครบทั้ง 5 (compulsory)</li>
+<li><b>Auxiliary</b>: รายการข้างบนเป็นข้อเสนอ แต่ต้องมีอย่างน้อย 1 ใบ</li>
+<li><b>Pre-process</b>: เปิดเฉพาะเมื่อโรงงานมีกิจกรรมนั้นจริง (เช่น ไม่มีโรงไฟฟ้าก็ไม่ต้องเปิด Power generation) แตกย่อยได้ แต่ต้องรวมกลับเป็น 7 กลุ่มนี้ได้เสมอ</li>
+</ul>
+
+<div class="box work"><b class="t">💼 ลองใช้กับงานจริง</b>
+ถามฝ่าย Controlling ว่ารหัส cost center ของโรงงานแต่ละตัวอยู่ในตะกร้าชนิดไหน (Main / Auxiliary / Pre-process) แล้วจดเป็นตารางของตัวเอง เช่น cost center ชื่อ "Plant management" มักเป็น Auxiliary ที่ถูกแบ่งเข้า Clinker production กับ Cement grinding</div>
+`,
+  quiz:[
+    {q:'Cost center ตามนิยามคืออะไร',o:['บัญชีธนาคารของแผนก','ตัวเก็บรวบรวมต้นทุนหลาย type of cost ของพื้นที่/กิจกรรมหนึ่ง','รายชื่อผู้ขาย','ใบสั่งซื้อ (PO)'],a:1,e:'Cost center คือ cost collector ใช้รวบรวมต้นทุนหลายประเภทของพื้นที่หรือกิจกรรมหนึ่ง'},
+    {q:'"Quality control and laboratory" เป็น cost center ชนิดใด',o:['Main','Auxiliary','Pre-process','Administration'],a:1,e:'Lab/QC ให้บริการทุกขั้นตอนของโรงงาน จึงเป็น Auxiliary cost center'},
+    {q:'"Alternative fuels preparation and handling" เป็น cost center ชนิดใด',o:['Main','Auxiliary','Pre-process','Distribution'],a:2,e:'เป็น Pre-process (กลุ่ม "ไฟ") เตรียมเชื้อเพลิงทดแทนแล้วส่งให้ Clinker production ที่ใช้จริง'},
+    {q:'ข้อใดเป็น Main cost center ทั้งหมด',o:['Clinker production, Cement grinding/blending','Plant management, Clinker production','Power generation, Raw meal preparation','Shipping station, Cement grinding/blending'],a:0,e:'Main มี 5 ใบ: Raw material extraction, Raw material preparation, Raw meal preparation, Clinker production, Cement grinding/blending'},
+    {q:'Pre-process cost center มีทั้งหมดกี่ใบ (ระดับบน)',o:['5','7','12','3'],a:1,e:'7 ใบ: ดิน 2 (Alternative raw materials, Correctives) · ไฟ 3 (Power generation, Traditional fuels, Alternative fuels) · ปูน 2 (Gypsum & additives, Mineral components)'},
+    {q:'โรงงานที่ไม่มีโรงไฟฟ้าของตัวเอง ต้องเปิด "Power generation" cost center หรือไม่',o:['ต้องเปิดเสมอ','ไม่ต้อง เปิดเฉพาะเมื่อมีกิจกรรมนั้นจริง','ต้องเปิดเป็น Main แทน','ต้องย้ายไปไว้ใน Administration'],a:1,e:'Pre-process เปิดเฉพาะเมื่อโรงงานมีกิจกรรมนั้น ส่วน Main ทั้ง 5 เท่านั้นที่บังคับเปิดเสมอ'},
+    {q:'"Parts and supplies management" (งานคลังอะไหล่) อยู่กลุ่มไหนของ Auxiliary',o:['บริหาร & ส่วนกลาง','ซ่อมบำรุง & อะไหล่','ไฟฟ้า & คุณภาพ','สาธารณูปโภค'],a:1,e:'อยู่กลุ่มซ่อมบำรุง & อะไหล่ ร่วมกับ Plant maintenance and workshops และ Mobile equipment maintenance/garage'}
+  ]},
+
+/* ---------------- บทที่ 2 ---------------- */
+{ id:'c2', title:'Allocation & Boundaries: เทตะกร้า และเส้นแบ่งฝ่าย', min:30,
+  body:`
+<p class="lead">ตะกร้า Auxiliary กับ Pre-process ไม่ได้อยู่ตรงนั้นตลอด ตอนปิดงวดจะถูก "เท" (allocate) เข้าตะกร้าหลัก บทนี้ว่าด้วยกติกาการเท และว่าค่าใช้จ่ายแบบไหนเป็นของฝ่ายผลิต แบบไหนไม่ใช่</p>
+
+<h2>1. Primary cost กับ Secondary cost</h2>
+<div class="tbl"><table>
+<tr><th></th><th>Primary cost</th><th>Secondary cost</th></tr>
+<tr><td>คืออะไร</td><td>ค่าใช้จ่ายที่บันทึกลงตะกร้าโดยตรง เช่น ค่าแรง ค่าจ้างผู้รับเหมา ค่าเชื้อเพลิง</td><td>ต้นทุนที่ "ถูกเทมา" จากตะกร้าอื่น (allocation)</td></tr>
+<tr><td>ตัวอย่างใน Clinker production</td><td>Labour expenses, Third party services, Fuels/thermal energy (kiln)</td><td>Allocation of auxiliary cost centers</td></tr>
+</table></div>
+<div class="box fruit"><b class="t">🧺 ภาพตะกร้า</b> Primary = ผลไม้ที่ซื้อมาใส่เองโดยตรง · Secondary = ผลไม้ที่ตะกร้าอื่นเทแบ่งมาให้</div>
+
+<h2>2. กติกาเท Auxiliary: 70 / 30</h2>
+<div class="formula">Auxiliary cost centers → 70% ไป Clinker production + 30% ไป Cement grinding/blending</div>
+<p><b>ตัวอย่าง:</b> เดือนนี้ Auxiliary ทั้งหมดรวม 1,000,000 บาท → Clinker production รับ 700,000 · Cement grinding รับ 300,000</p>
+<p>ข้อยกเว้น:</p>
+<ul>
+<li>โรงงานที่ไม่มีหม้อบดปูน → เท <b>100%</b> ให้ Clinker production</li>
+<li>โรงบดปูน/สถานีผสม (ไม่มี Kiln) → เท <b>100%</b> ให้ Cement grinding/blending</li>
+<li>ถ้างานสนับสนุนนั้นให้บริการ Main เพียงใบเดียว → บันทึกตรงเข้า Main ใบนั้นเลย ไม่ต้องผ่าน Auxiliary</li>
+<li><b>Plant management</b> ต้องใช้เก็บค่าใช้จ่ายของหัวหน้างาน (supervisors) เสมอ เพื่อรักษาความลับเรื่องเงินเดือน แล้วค่อยแบ่ง 70/30</li>
+</ul>
+<p>กรณีพิเศษ: <b>Railway traffic infrastructure</b> — ถ้าปริมาณขนส่งขาเข้าทางรถไฟ &gt; 20% ของทั้งหมด ให้เปิดเป็น Auxiliary ในฝ่ายผลิต ถ้า &lt; 20% ให้ไปรวมใน Shipping station (Distribution)</p>
+
+<h2>3. กติกาเท Pre-process</h2>
+<p>Pre-process เทให้ <b>ทุกตะกร้าที่รับของไปใช้</b> ตามการใช้จริง เช่น Traditional fuels prep. ส่งถ่านหินที่บดแล้วให้ Kiln → ต้นทุนไปอยู่ที่ Clinker production · Gypsum & additives ไปอยู่ที่ Cement grinding</p>
+
+<h2>4. เส้นแบ่ง: อะไรเป็นของฝ่ายผลิต อะไรไม่ใช่</h2>
+<p>หลักใหญ่: <b>ต้นทุนทุกอย่างที่เกี่ยวกับโรงงานใดโรงงานหนึ่งโดยตรง ต้องอยู่ในต้นทุนผลิต (cost of goods produced) ของโรงงานนั้น</b></p>
+<div class="tbl"><table>
+<tr><th>เส้นแบ่ง</th><th>เป็นของฝ่ายผลิต (Clinker & Cement)</th><th>ไม่ใช่ของฝ่ายผลิต</th></tr>
+<tr><td><b>vs Administration</b></td><td>คลังเก็บวัตถุดิบ เชื้อเพลิง อะไหล่ (stores & warehouses)</td><td>บัญชีโรงงาน, HR, IT ที่โรงงาน, จัดซื้อ (ไม่รวมงานคลัง) → Administration</td></tr>
+<tr><td><b>vs Corporate Manufacturing</b></td><td>ผู้จัดการโรงงานและทีม → Auxiliary "Plant management"</td><td>Engineering, Technical support, วางแผนโครงการ/CAPEX, งานสิ่งแวดล้อมระดับบริษัท, R&D → Corporate Manufacturing</td></tr>
+<tr><td><b>vs Distribution</b></td><td>เก็บ Clinker และปูนผง (bulk) ในโรงงาน · ลำเลียง Clinker ไปที่เก็บ และปูนไป Silo</td><td>เก็บปูนถุง · Shipping station → Distribution</td></tr>
+</table></div>
+
+<div class="box memo"><b class="t">🧠 กฎจำง่าย</b>
+<ul>
+<li>คนที่โรงงานทำงาน <b>ธุรการ</b> (บัญชี HR IT จัดซื้อ) = Administration เสมอ</li>
+<li>งาน <b>ส่วนกลาง</b> ที่ไม่ได้ผลิตเองที่โรงงาน = Corporate Manufacturing</li>
+<li>ปูน <b>ผง</b> ยังเป็นของผลิต · ปูน <b>ถุง</b> เป็นของ Distribution</li>
+</ul></div>
+
+<h3>ทำไม Corporate Manufacturing ถึงสำคัญ</h3>
+<p>Corporate Manufacturing รวมอยู่ในต้นทุนขาย (production cost of goods sold) ก็จริง แต่ <b>ไม่รวม</b> ใน cost of goods produced ของโรงงาน <b>ไม่ถูกแบ่ง</b> เข้าแต่ละโรงงาน และ <b>ไม่รวม</b> ในมูลค่าสินค้าคงเหลือ เพื่อให้ต้นทุนของโรงงานสะท้อนเฉพาะสิ่งที่ผู้จัดการโรงงานรับผิดชอบจริง</p>
+`,
+  quiz:[
+    {q:'ค่าใช้จ่ายของ Auxiliary cost center รวม 2,000,000 บาท (โรงงานมีทั้ง Kiln และหม้อบดปูน) Cement grinding/blending จะได้รับเท่าไหร่',o:['1,400,000','600,000','1,000,000','2,000,000'],a:1,e:'กติกา 70/30 → Cement grinding ได้ 30% = 600,000 บาท และ Clinker production ได้ 70% = 1,400,000 บาท'},
+    {q:'"Allocation of auxiliary cost centers" ใน Clinker production เป็นต้นทุนแบบใด',o:['Primary cost','Secondary cost','Non-operating cost','Company-level cost'],a:1,e:'เป็น Secondary cost เพราะถูกเทมาจากตะกร้าอื่น ไม่ได้บันทึกตรง'},
+    {q:'เจ้าหน้าที่ HR ที่นั่งทำงานในโรงงาน ค่าใช้จ่ายอยู่ที่ไหน',o:['Plant management','Clinker production','Administration','Corporate Manufacturing'],a:2,e:'คนที่โรงงานที่ทำงานบัญชีและ HR (ที่ไม่เกี่ยวกับการผลิต) อยู่ใน Administration'},
+    {q:'คลังเก็บอะไหล่และเชื้อเพลิงในโรงงาน อยู่ฝ่ายใด',o:['Administration','Clinker and Cement production','Distribution','Corporate Manufacturing'],a:1,e:'Stores and warehouses ของวัตถุดิบ เชื้อเพลิง และอะไหล่ เป็นของฝ่ายผลิต (ต่างจากงานจัดซื้อที่เป็น Administration)'},
+    {q:'ค่าเก็บรักษาปูนถุง อยู่ฝ่ายใด',o:['Clinker and Cement production','Distribution','Administration','Plant management'],a:1,e:'ปูนผง (bulk) ในโรงงานเป็นของผลิต แต่ปูนถุงเป็นของ Distribution'},
+    {q:'ทีม Engineering ส่วนกลางที่ออกแบบโครงการ CAPEX อยู่ที่ไหน',o:['Plant management','Corporate Manufacturing','Plant maintenance and workshops','Clinker production'],a:1,e:'Technical support และ Project/CAPEX planning เป็น Corporate Manufacturing ไม่ถูกแบ่งเข้าต้นทุนผลิตของโรงงาน'},
+    {q:'โรงบดปูน (grinding plant) ที่ไม่มี Kiln จะเท Auxiliary อย่างไร',o:['70/30 ตามปกติ','100% ให้ Cement grinding/blending','100% ให้ Clinker production','ไม่ต้องเท'],a:1,e:'ไม่มี Clinker production ให้รับ จึงเท 100% เข้า Cement grinding/blending'},
+    {q:'ทำไมค่าใช้จ่ายของหัวหน้างาน (supervisors) ต้องผ่าน Plant management เสมอ',o:['เพราะได้ส่วนลดภาษี','เพื่อรักษาความลับเรื่องค่าตอบแทน','เพราะ SAP บังคับ','เพราะเป็นต้นทุน non-cash'],a:1,e:'เพื่อความลับ (confidentiality) ค่าใช้จ่ายของ supervisors จึงรวมไว้ที่ Plant management ก่อน แล้วค่อยแบ่ง 70/30'}
+  ]},
+
+/* ---------------- บทที่ 3 ---------------- */
+{ id:'c3', title:'Type of Cost: ผลไม้ในตะกร้า', min:35,
+  body:`
+<p class="lead">ผลไม้ในตะกร้ามีกี่ชนิด และชนิดไหนใส่ตะกร้าไหนได้ บทนี้คือ "รายชื่อผลไม้" มาตรฐานที่ใช้ในรายงานต้นทุนต่อตัน (15A)</p>
+
+<h2>1. ชื่อเรียกที่ต้องรู้</h2>
+<ul>
+<li><b>Type of cost / revenue</b> — คำที่ใช้ในเอกสาร HARP</li>
+<li><b>Cost element</b> — คำที่ใช้ใน SAP CO (ใกล้เคียงกับ GL account ฝั่งต้นทุน)</li>
+<li>ในชีวิตจริงมักแปะ GL หลายตัวเข้ากลุ่มเดียวกันเป็น 1 Type of cost เช่น GL ค่าจ้างผู้รับเหมาหลายบัญชีอยู่ใต้ "Third Party Services"</li>
+</ul>
+
+<h2>2. รายชื่อผลไม้ในรายงาน 15A (เรียงตามรายงานจริง)</h2>
+<p>สัญลักษณ์: <span class="tag v">V</span> Variable · <span class="tag f">F</span> Fixed · <span class="tag m">M</span> นับเป็น Maintenance cost</p>
+<div class="tbl"><table>
+<tr><th>Type of cost</th><th>หมายถึง / ตัวอย่างในโรงงาน</th></tr>
+<tr><th colspan="2" style="background:#e8f0fb">Variable cash cost — แปรผันตามปริมาณผลิต</th></tr>
+<tr><td>Raw Materials <span class="tag v">V</span></td><td>วัตถุดิบที่ซื้อ/ใช้ เช่น หิน ดิน แร่ปรับส่วนผสม</td></tr>
+<tr><td>Fuels / Thermal Energy (Kiln) <span class="tag v">V</span></td><td>เชื้อเพลิงที่เผาใน Kiln: ถ่านหิน, AF (RDF, ยาง, biomass)</td></tr>
+<tr><td>Diesel / Gasoline <span class="tag v">V</span></td><td>น้ำมันรถตัก รถบรรทุกในเหมือง</td></tr>
+<tr><td>Electrical Energy Variable <span class="tag v">V</span></td><td>ค่าไฟส่วนที่แปรตามหน่วยที่ใช้</td></tr>
+<tr><td>Wear Parts <span class="tag v">V</span><span class="tag m">M</span></td><td>ชิ้นส่วนสึกหรอตามปริมาณผลิต: อิฐทนไฟ (refractories), ลูกบด (grinding media), liners</td></tr>
+<tr><td>Production and Distribution Material <span class="tag v">V</span></td><td>วัสดุสิ้นเปลืองในการผลิต เช่น สารช่วยบด</td></tr>
+<tr><td>Labor Expenses Own Variable <span class="tag v">V</span></td><td>ค่าแรงพนักงานเองส่วนที่แปรตามการผลิต</td></tr>
+<tr><td>Labor Expenses Maintenance Own Variable <span class="tag v">V</span><span class="tag m">M</span></td><td>ค่าแรงช่างซ่อมของเราเอง ส่วนแปรผัน</td></tr>
+<tr><td>Labor Expenses Subcontracted Variable <span class="tag v">V</span></td><td>ค่าแรงผู้รับเหมาที่ทำงานผลิต ส่วนแปรผัน</td></tr>
+<tr><td>Labor Expenses Maintenance Subcontracted Variable <span class="tag v">V</span><span class="tag m">M</span></td><td>ค่าแรงผู้รับเหมางานซ่อม ส่วนแปรผัน</td></tr>
+<tr><td>Outsourced Activities <span class="tag v">V</span></td><td>จ้างเหมาทั้งกิจกรรม เช่น จ้างเหมาทำเหมือง</td></tr>
+<tr><td>Mining Concessions and Royalties <span class="tag v">V</span></td><td>ค่าภาคหลวงแร่ ค่าสัมปทาน</td></tr>
+<tr><th colspan="2" style="background:#f0ebe4">Fixed cash cost — ไม่ขึ้นกับปริมาณผลิตในระยะสั้น</th></tr>
+<tr><td>Electrical Energy Fixed <span class="tag f">F</span></td><td>ค่าไฟส่วนคงที่</td></tr>
+<tr><td>Labor Expenses Own Fixed <span class="tag f">F</span></td><td>เงินเดือนพนักงานประจำ</td></tr>
+<tr><td>Labor Expenses Subcontracted Fixed <span class="tag f">F</span></td><td>ผู้รับเหมาประจำ (ไม่ใช่งานซ่อม)</td></tr>
+<tr><td>Labor Expenses Maintenance Own Fixed <span class="tag f">F</span><span class="tag m">M</span></td><td>เงินเดือนช่างซ่อมบำรุงของเรา</td></tr>
+<tr><td>Labor Expenses Maintenance Subcontracted Fixed <span class="tag f">F</span><span class="tag m">M</span></td><td>ผู้รับเหมาซ่อมบำรุงประจำ</td></tr>
+<tr><td>Other Personnel Expenses <span class="tag f">F</span></td><td>สวัสดิการ อบรม ชุดพนักงาน ฯลฯ</td></tr>
+<tr><td>Third Party Services <span class="tag f">F</span></td><td>จ้างบริการภายนอก (ไม่ใช่งานซ่อม) เช่น ทำความสะอาด รปภ. ตรวจวัด</td></tr>
+<tr><td>Third Party Services Maintenance <span class="tag f">F</span><span class="tag m">M</span></td><td>จ้างภายนอกมาซ่อม</td></tr>
+<tr><td>Maintenance Material <span class="tag f">F</span><span class="tag m">M</span></td><td>อะไหล่/วัสดุซ่อมทั่วไป (ที่ไม่ใช่ Wear Parts)</td></tr>
+<tr><td>Other Cost Center Expenses <span class="tag f">F</span></td><td>ค่าใช้จ่ายอื่น ๆ ของ cost center</td></tr>
+<tr><td>By-Products and Other Revenues <span class="tag f">F</span></td><td>รายได้จากของพลอยได้ (เป็นตัวเลขติดลบ ช่วยลดต้นทุน)</td></tr>
+<tr><th colspan="2" style="background:#f3f1ee">Non-cash — ไม่ได้จ่ายเงินสดจริงในงวดนั้น</th></tr>
+<tr><td>Other Provisions and Write-Offs</td><td>ตั้งสำรอง เช่น อะไหล่ล้าสมัย, ฟื้นฟูพื้นที่เหมือง</td></tr>
+<tr><td>Depreciation and Amortization</td><td>ค่าเสื่อมราคาเครื่องจักร อาคาร</td></tr>
+</table></div>
+<p style="font-size:14px;color:var(--mute)">ตัวอย่างในคอลัมน์ขวาเป็นคำอธิบายประกอบเพื่อให้เห็นภาพ การจัดเข้ากลุ่มจริงให้ยึดตาม mapping ของ GL ที่บริษัทใช้</p>
+
+<h2>3. HARP Matrix: กฎว่าผลไม้ไหนใส่ตะกร้าไหนได้</h2>
+<p><b>HARP Matrix</b> คือตารางใหญ่ แถว = Type of cost, คอลัมน์ = Cost center ช่องที่เปิดไว้คือคู่ที่ "อนุญาต" ให้บันทึก ช่องที่ปิดคือห้าม</p>
+<div class="card"><b>ตัวอย่าง:</b> Type of cost "<b>Fuels / Thermal Energy (Kiln)</b>" บันทึกได้แค่ 3 ตะกร้า
+<ol><li>Pre-process "Power generation"</li><li>Main "Clinker production"</li><li>Pre-process "Alternative fuels preparation and handling"</li></ol>
+ถ้ามีคนพยายามบันทึกค่าเชื้อเพลิง Kiln ลงใน Cement grinding → ผิดกติกา</div>
+<div class="box fruit"><b class="t">🧺 ภาพตะกร้า</b> HARP Matrix = ป้ายที่แปะหน้าตะกร้าแต่ละใบ บอกว่า "ตะกร้านี้รับผลไม้ชนิดไหนได้บ้าง"</div>
+
+<div class="box work"><b class="t">💼 ลองใช้กับงานจริง</b>
+หยิบ GL ที่เจอบ่อยในไฟล์งบหรือรายงานของตัวเองมา 5 ตัว แล้วลองจับคู่ว่าอยู่ Type of cost ไหน เช่น GL ค่าจ้างบริการภายนอกทั่วไปจะอยู่กลุ่ม <b>Third Party Services</b> ส่วนงานจ้างซ่อมแยกไป <b>Third Party Services Maintenance</b> ถ้าแยกถูก Maintenance cost per ton ของโรงงานก็จะถูกตามไปด้วย</div>
+
+<div class="box memo"><b class="t">🧠 ท่องจำ</b>
+<ul>
+<li>Variable มี 12 รายการ · Fixed มี 11 รายการ → รวม = <b>Cash cost</b></li>
+<li>คำว่า "<b>Maintenance</b>" อยู่ในชื่อ = นับเป็น Maintenance (บวก <b>Wear Parts</b> อีก 1 ตัวที่ชื่อไม่มีคำนี้) รวม 7 รายการ</li>
+</ul></div>
+`,
+  quiz:[
+    {q:'ใน SAP คำว่า "Cost element" ตรงกับคำไหนในเอกสาร HARP มากที่สุด',o:['Cost center','Type of cost','Profit center','Factor'],a:1,e:'Cost element ใน SAP ≈ Type of cost ใน HARP = "ผลไม้" ส่วน Cost center = "ตะกร้า"'},
+    {q:'ค่าถ่านหินที่ใช้เผาใน Kiln เป็น Type of cost ใด',o:['Raw Materials','Fuels / Thermal Energy (Kiln)','Diesel / Gasoline','Production and Distribution Material'],a:1,e:'เชื้อเพลิงที่เผาในระบบ Kiln ทั้งแบบดั้งเดิมและทดแทนอยู่ใน Fuels / Thermal Energy (Kiln)'},
+    {q:'อิฐทนไฟ (refractory) ที่เปลี่ยนใน Kiln บันทึกเป็น Type of cost ใด',o:['Maintenance Material','Wear Parts','Raw Materials','Other Cost Center Expenses'],a:1,e:'Refractories, grinding media, liners เป็น Wear Parts (variable และนับเป็น maintenance) อะไหล่ซ่อมทั่วไปอื่น ๆ ค่อยไป Maintenance Material'},
+    {q:'ตาม HARP Matrix "Fuels / Thermal Energy (Kiln)" บันทึกใน cost center ใดไม่ได้',o:['Clinker production','Power generation','Alternative fuels preparation and handling','Cement grinding / blending'],a:3,e:'Type นี้เปิดให้ใช้แค่ 3 ตะกร้า: Power generation, Clinker production, Alternative fuels prep. & handling'},
+    {q:'จ้างบริษัทภายนอกมาซ่อมมอเตอร์ ควรเป็น Type of cost ใด',o:['Third Party Services','Third Party Services Maintenance','Outsourced Activities','Labor Expenses Own Fixed'],a:1,e:'งานจ้างภายนอกที่เป็นงานซ่อมต้องแยกเป็น Third Party Services Maintenance เพื่อให้นับเป็น Maintenance cost'},
+    {q:'"By-Products and Other Revenues" มีผลอย่างไรต่อต้นทุน',o:['เพิ่มต้นทุน','ลดต้นทุน (เป็นรายได้ หักออก)','ไม่มีผล','เป็น non-cash'],a:1,e:'เป็นรายได้จากของพลอยได้ บันทึกเป็นตัวเลขติดลบใน Fixed cash cost จึงช่วยลดต้นทุน'},
+    {q:'HARP Matrix คืออะไร',o:['ตารางเงินเดือน','ตารางที่บอกว่า Type of cost ใดบันทึกใน Cost center ใดได้','แผนผังโรงงาน','รายงานกำไรขาดทุน'],a:1,e:'แถว = Type of cost, คอลัมน์ = Cost center ช่องที่เปิดคือคู่ที่อนุญาตให้บันทึก'}
+  ]},
+
+/* ---------------- บทที่ 4 ---------------- */
+{ id:'c4', title:'5 แว่นมองต้นทุน: Fixed/Variable, Cash, Maintenance', min:30,
+  body:`
+<p class="lead">ผลไม้แต่ละชนิดมี "ป้ายคุณสมบัติ" ติดอยู่ 5 แบบ ระบบใช้ป้ายพวกนี้ในการทำรายงานและคำนวณตัวชี้วัด</p>
+
+<div class="flow">
+  <div class="s"><b>1. Fixed vs Variable</b></div>
+  <div class="s"><b>2. Cash vs Non-cash</b></div>
+  <div class="s"><b>3. Production vs Maintenance</b></div>
+  <div class="s"><b>4. Above vs Below operating profit</b></div>
+  <div class="s"><b>5. Cost center vs Company level</b></div>
+</div>
+
+<h2>แว่นที่ 1: Fixed vs Variable</h2>
+<p><b>Variable</b> = ต้นทุนที่ในระยะสั้นขึ้นลงตามปริมาณผลิตโดยตรง (ผลิตมากจ่ายมาก) · อย่างอื่นทั้งหมดนับเป็น <b>Fixed</b></p>
+<div class="tbl"><table>
+<tr><th>ตัวอย่างในสไลด์</th><th>เป็น</th><th>เหตุผล</th></tr>
+<tr><td>น้ำมัน / เชื้อเพลิง</td><td>Variable</td><td>เผามากขึ้นเมื่อผลิตมากขึ้น</td></tr>
+<tr><td>ไฟฟ้า</td><td>Variable & Fixed</td><td>มีทั้งส่วนที่แปรตามหน่วยใช้ และส่วนคงที่ จึงแยกเป็น 2 Type of cost</td></tr>
+<tr><td>ช่างเชื่อมซ่อม</td><td>Fixed</td><td>งานซ่อมตามแผนไม่ได้ขึ้นกับตันที่ผลิตในเดือนนั้น</td></tr>
+</table></div>
+<p>การแยก Fixed/Variable <b>บังคับเฉพาะ Production และ Distribution</b></p>
+
+<h2>แว่นที่ 2: Cash vs Non-cash</h2>
+<p><b>Cash item</b> = มีเงินไหลเข้า/ออกจาก cost center จริง · <b>Non-cash</b> มี 3 ตระกูล:</p>
+<div class="tbl"><table>
+<tr><th>Provisions (ตั้งสำรอง)</th><th>Depreciation (ค่าเสื่อม)</th><th>Write-offs (ตัดจำหน่าย)</th></tr>
+<tr><td>ฟื้นฟูพื้นที่เหมือง (site restoration)<br>อะไหล่ล้าสมัย (obsolescence)<br>คดีความ (litigations)</td><td>ค่าเสื่อมสินทรัพย์ถาวร<br>ค่าตัดจำหน่ายสินทรัพย์ไม่มีตัวตน</td><td>ตัดสินทรัพย์หมุนเวียน/ระยะยาว<br>หนี้สงสัยจะสูญ</td></tr>
+</table></div>
+
+<h2>แว่นที่ 3: Production vs Maintenance</h2>
+<p><b>Maintenance expenses</b> = ค่าใช้จ่ายที่เกิดจาก</p>
+<ul><li><b>รักษาและฟื้นฟู</b> สินทรัพย์ให้กลับมาอยู่ในสภาพที่ต้องการ</li><li><b>ตรวจประเมิน</b> สภาพจริงของสินทรัพย์ที่ใช้ในการผลิตและขนส่ง</li></ul>
+<p>การแยกนี้ <b>บังคับ</b> สำหรับ Clinker and cement, Aggregates และ Ready-mix ใช้ทำตัวเลข <b>Maintenance cost per ton</b></p>
+<div class="box work"><b class="t">💼 ลองใช้กับงานจริง</b>
+งานจัดประเภทงานซ่อมใน SAP PM คือต้นน้ำของแว่นนี้ ถ้า work order ถูกจัดเป็นงานซ่อม ค่าใช้จ่ายจะไปลง Type of cost ที่มีตัว <span class="tag m">M</span> (เช่น Maintenance Material, Third Party Services Maintenance)</div>
+
+<h2>แว่นที่ 4: Above vs Below operating profit</h2>
+<p>ค่าเริ่มต้น: <b>ทุกอย่างเป็น operating</b> (อยู่เหนือ operating profit) ยกเว้นรายการที่ระบุชัดว่าอยู่ใต้เส้น เช่น</p>
+<ul>
+<li>Financial income / Financial expenses (ดอกเบี้ย)</li>
+<li>Foreign exchange gains (losses)</li>
+<li>Impairment, Unusual write-offs</li>
+<li>Gains (losses) on disposal of property, plant and equipment (กำไร/ขาดทุนจากขายสินทรัพย์)</li>
+<li>Current / Deferred taxation (ภาษี)</li>
+</ul>
+<p>สำหรับคนฝ่ายผลิต: ต้นทุนเกือบทั้งหมดที่เราเจอเป็น <b>operating</b></p>
+
+<h2>แว่นที่ 5: Cost center vs Company level</h2>
+<p>บาง Type of cost ไม่บันทึกลงตะกร้าใด แต่อยู่ระดับบริษัท/sub-segment เช่น Net sales, Cost of finished goods purchased, Inter-unit production freight, Inventory movements finished products, Inventory value adjustments</p>
+
+<h2>Cost vs Expense ต่างกันอย่างไร</h2>
+<div class="tbl"><table>
+<tr><th>Cost = ต้นทุน</th><th>Expense = ค่าใช้จ่าย</th></tr>
+<tr><td>สิ่งที่จ่ายไปเพื่อให้ได้สินค้า/บริการ (ส่วนใหญ่คือการผลิต) มักใช้คู่กับคำว่า Variable cost</td><td>การใช้ทรัพยากรที่หมดค่าไปในรอบบัญชีนั้น เช่น Salary expenses, Transportation expenses</td></tr>
+<tr><td colspan="2">ทั้ง 2 แบบเป็น Fixed ได้ ถ้าจ่ายแน่นอนทั้งจำนวนและเวลา ความหมายจริงขึ้นกับธุรกิจและบริบทที่ใช้</td></tr>
+</table></div>
+
+<div class="box memo"><b class="t">🧠 ท่องจำ 5 แว่น</b> "<b>แปร–สด–ซ่อม–เส้น–ระดับ</b>" = แปรผัน? เงินสด? ซ่อม? อยู่เหนือ/ใต้เส้นกำไร? ระดับ cost center หรือบริษัท?</div>
+`,
+  quiz:[
+    {q:'การแยก Fixed กับ Variable บังคับทำในฝ่ายใด',o:['ทุกฝ่าย','Production และ Distribution เท่านั้น','Administration เท่านั้น','Corporate Manufacturing'],a:1,e:'ตามสไลด์ การแยก Fixed/Variable บังคับเฉพาะ Production และ Distribution'},
+    {q:'ข้อใดเป็น Non-cash item',o:['ค่าจ้างผู้รับเหมา','ค่าเสื่อมราคาเครื่องจักร','ค่าถ่านหิน','ค่าไฟฟ้า'],a:1,e:'Non-cash มี 3 ตระกูล: Provisions, Depreciation & amortization, Write-offs'},
+    {q:'ตั้งสำรองสำหรับอะไหล่ที่ล้าสมัย (obsolescence) จัดเป็นอะไร',o:['Cash, Variable','Non-cash (Provision)','Below operating profit','Company level'],a:1,e:'เป็น Provision ซึ่งเป็น non-cash เพราะยังไม่มีเงินจ่ายออกจริง'},
+    {q:'Maintenance expenses ตามนิยาม HARP ครอบคลุมข้อใด',o:['เฉพาะซื้ออะไหล่','การรักษา/ฟื้นฟูสภาพสินทรัพย์ และการตรวจประเมินสภาพสินทรัพย์','การซื้อเครื่องจักรใหม่','ค่าวัตถุดิบ'],a:1,e:'รวมทั้ง maintaining/restoring desired status และ assessing actual status ของสินทรัพย์ที่ใช้ผลิตและขนส่ง'},
+    {q:'ดอกเบี้ยเงินกู้ (Financial expenses) อยู่ที่ใด',o:['Above operating profit','Below operating profit','Variable cash cost','Maintenance'],a:1,e:'Financial income/expenses, FX, ภาษี, impairment, กำไร/ขาดทุนจากขายสินทรัพย์ อยู่ใต้ operating profit'},
+    {q:'ตามตัวอย่างในสไลด์ ค่าไฟฟ้าจัดเป็นแบบใด',o:['Variable อย่างเดียว','Fixed อย่างเดียว','มีทั้ง Variable และ Fixed','Non-cash'],a:2,e:'จึงมี Type of cost 2 ตัว: Electrical Energy Variable และ Electrical Energy Fixed'},
+    {q:'"Net sales" บันทึกที่ระดับใด',o:['Clinker production','Plant management','Company / sub-segment level (ไม่มี cost center)','Shipping station'],a:2,e:'Net sales และรายการอย่าง Inventory movements finished products อยู่ระดับบริษัท/sub-segment'}
+  ]},
+
+/* ---------------- บทที่ 5 ---------------- */
+{ id:'c5', title:'บันไดต้นทุน: จาก Cash cost ถึง Cost of goods produced', min:30,
+  body:`
+<p class="lead">ในรายงาน ต้นทุนของแต่ละ Main cost center ถูกบวกขึ้นเป็นขั้นบันได แต่ละขั้นมีชื่อของมัน และผู้บริหารจะถามถึง "ขั้น" ไหนก็ได้</p>
+
+<h2>1. บันได 4 ขั้น</h2>
+<div class="formula">
+Variable cash cost + Fixed cash cost = <span style="color:var(--red)">Cash cost</span><br>
+Cash cost ± Provisions & write-offs = <span style="color:var(--red)">Actual cost</span><br>
+Actual cost + Depreciation = <span style="color:var(--red)">Cost of goods produced (COGP)</span>
+</div>
+
+<h2>2. ตัวอย่างจริงจากสไลด์: Raw material extraction</h2>
+<div class="wf" id="wf1"></div>
+<div class="tbl"><table>
+<tr><th>บรรทัด</th><th class="num">USD</th></tr>
+<tr><td>Variable cash cost</td><td class="num">42,500</td></tr>
+<tr><td>+ Fixed cash cost</td><td class="num">33,100</td></tr>
+<tr class="sum"><td>= Cash cost</td><td class="num">75,600</td></tr>
+<tr><td>+/- Provisions</td><td class="num">100</td></tr>
+<tr class="sum"><td>= Actual cost</td><td class="num">75,700</td></tr>
+<tr><td>+ Depreciation</td><td class="num">11,000</td></tr>
+<tr class="sum"><td>= Cost of goods produced</td><td class="num">86,700</td></tr>
+<tr><td>Production tons</td><td class="num">73,000 t</td></tr>
+<tr class="sum"><td>COGP ต่อตัน = 86,700 ÷ 73,000</td><td class="num">≈ 1.19 $/t</td></tr>
+</table></div>
+
+<h2>3. ขั้นที่ไกลออกไปมีของเพิ่ม: ส่งต่อจากขั้นก่อนหน้า</h2>
+<p>ตั้งแต่ Main cost center ที่ 2 เป็นต้นไป จะมีของ 2 อย่างเพิ่มเข้ามาใน COGP</p>
+<ul>
+<li><b>Consumption from inventory of previous main cost center</b> = มูลค่าของที่รับมาจากขั้นก่อน (เช่น Raw meal preparation ใช้หินที่ย่อยแล้วจากขั้นก่อนหน้า)</li>
+<li><b>Allocation of auxiliary cost centers</b> = ส่วนที่เทมาจาก Auxiliary (เกิดที่ Clinker production และ Cement grinding)</li>
+</ul>
+<div class="tbl"><table>
+<tr><th>ตัวอย่าง: Raw meal preparation</th><th class="num">USD</th></tr>
+<tr><td>Actual cost (ของตัวเอง)</td><td class="num">87,600</td></tr>
+<tr><td>+ Consumption from inventory of previous main cc</td><td class="num">125,393</td></tr>
+<tr><td>+ Allocation of auxiliary cc</td><td class="num">0</td></tr>
+<tr><td>+ Depreciation</td><td class="num">15,000</td></tr>
+<tr class="sum"><td>= Cost of goods produced</td><td class="num">227,993</td></tr>
+</table></div>
+<div class="box warn"><b class="t">จุดที่คนสับสนบ่อย</b>
+COGP ของแต่ละขั้น <b>รวม</b> มูลค่าของที่รับมาจากขั้นก่อน (เพื่อใช้ตีมูลค่าสินค้าคงเหลือ) แต่รายงาน cost per ton 15A <b>ไม่รวม</b> ส่วนนี้ เพราะ 15A ใช้วิธีคูณ factor แล้วบวกแต่ละขั้นแทน (บทที่ 7) ถ้ารวมด้วยจะนับซ้ำ</div>
+
+<h2>4. ทำไมต้องแยกเป็นขั้น</h2>
+<ul>
+<li><b>Cash cost</b> = เงินที่จ่ายออกจริง ใช้ดูการควบคุมค่าใช้จ่ายรายเดือน</li>
+<li><b>Actual cost</b> = รวมเรื่องที่ตั้งสำรองไว้ ใช้ดูภาระที่แท้จริง</li>
+<li><b>COGP</b> = รวมค่าเสื่อม ใช้ดูต้นทุนเต็มของการผลิต และตีมูลค่าสินค้าคงเหลือ</li>
+</ul>
+
+<h2>5. Inventory movement (การเคลื่อนไหวสต็อกของขั้นนั้น)</h2>
+<div class="tbl"><table>
+<tr><th>ตัวอย่าง Raw material extraction</th><th class="num">ตัน</th></tr>
+<tr><td>Opening inventory (ยอดยกมา)</td><td class="num">9,000</td></tr>
+<tr><td>+ Production</td><td class="num">74,000</td></tr>
+<tr><td>− Sent to other cost centers (ส่งให้ขั้นถัดไป)</td><td class="num">−72,000</td></tr>
+<tr><td>− Sold to 3rd parties (ขายออก)</td><td class="num">−1,000</td></tr>
+<tr class="sum"><td>= Closing inventory (ยอดคงเหลือ)</td><td class="num">10,000</td></tr>
+</table></div>
+<p>สังเกต: Production 74,000 ตัน แต่ "Production tons" ที่ใช้คำนวณต่อตันคือ <b>73,000</b> เพราะปริมาณที่ขายให้บุคคลภายนอก (1,000 ตัน) ไม่ถูกนับ</p>
+
+<div class="box memo"><b class="t">🧠 ท่องจำ</b> "<b>สด → จริง → ผลิต</b>": Cash cost → (+สำรอง) Actual cost → (+ค่าเสื่อม) Cost of goods produced</div>
+`,
+  quiz:[
+    {q:'Cash cost เท่ากับข้อใด',o:['Variable cash cost + Fixed cash cost','Actual cost + Depreciation','Variable cash cost − Fixed cash cost','COGP − Provisions'],a:0,e:'Cash cost = Variable cash cost + Fixed cash cost'},
+    {q:'Variable cash cost 50,000 · Fixed cash cost 30,000 · Provisions 2,000 · Depreciation 8,000 → Cost of goods produced เท่าไหร่',o:['80,000','82,000','90,000','88,000'],a:2,e:'Cash cost = 80,000 → Actual = 82,000 → COGP = 82,000 + 8,000 = 90,000'},
+    {q:'จากข้อก่อน ถ้าผลิตได้ 45,000 ตัน COGP ต่อตันคือเท่าไหร่',o:['1.78','2.00','1.82','1.96'],a:1,e:'90,000 ÷ 45,000 = 2.00 ต่อตัน'},
+    {q:'ขั้นใดของบันไดที่เพิ่ม "ค่าเสื่อมราคา" เข้ามา',o:['Cash cost → Actual cost','Actual cost → Cost of goods produced','Variable → Fixed','ไม่มีขั้นใด'],a:1,e:'Actual cost + Depreciation = Cost of goods produced'},
+    {q:'ทำไม "Production tons" ของ Raw material extraction (73,000) จึงน้อยกว่าที่ผลิตได้จริง (74,000)',o:['เพราะหักความชื้น','เพราะไม่นับส่วนที่ขายให้บุคคลภายนอก','เพราะหักสต็อกยกมา','เพราะคำนวณผิด'],a:1,e:'ปริมาณที่ขายให้บุคคลภายนอก 1,000 ตันไม่ถูกนับใน production volume สำหรับ cost per ton'},
+    {q:'Opening 5,000 t + Production 60,000 t − ส่งขั้นถัดไป 58,000 t − ขาย 0 t → Closing inventory เท่าไหร่',o:['7,000','2,000','3,000','63,000'],a:0,e:'5,000 + 60,000 − 58,000 = 7,000 ตัน'},
+    {q:'รายงาน cost per ton 15A รวม "Consumption from inventory of previous main cost center" หรือไม่',o:['รวม','ไม่รวม เพราะ 15A ใช้วิธีคูณ factor แล้วบวกแต่ละขั้นแทน','รวมเฉพาะ Clinker','รวมเฉพาะค่าเสื่อม'],a:1,e:'ถ้ารวมด้วยจะนับซ้ำ 15A จึงใช้ต้นทุนของแต่ละขั้นเอง คูณ factor แล้วบวกกัน'}
+  ]},
+
+/* ---------------- บทที่ 6 ---------------- */
+{ id:'c6', title:'Volume & Factor: ตันอะไร และตัวคูณมาจากไหน', min:35,
+  body:`
+<p class="lead">ต้นทุนต่อตันต้องมี "ตัวหาร" ที่ถูกต้อง บทนี้บอกว่าแต่ละขั้นนับตันอย่างไร และทำไมต้องมี factor</p>
+
+<h2>1. หลักการนับ Volume</h2>
+<ul>
+<li>Volume = output ของ Main cost center แต่ <b>วัดที่ทางเข้า (input)</b> ของ cost center นั้น (ยกเว้น Raw material extraction)</li>
+<li><b>หักปริมาณที่ขายเป็นของพลอยได้</b> ออก (netted for sales of by-products)</li>
+<li>นับเป็นน้ำหนัก <b>แห้ง</b> (หักความชื้นออก)</li>
+<li>ปริมาณที่ผ่าน Pre-process ไม่ต้องรายงาน</li>
+</ul>
+
+<h2>2. แต่ละขั้นวัดอย่างไร</h2>
+<div class="tbl"><table>
+<tr><th>Main cost center</th><th>วิธีวัด</th></tr>
+<tr><td>Raw material extraction</td><td>นับเที่ยวรถบรรทุก/จำนวนตักของ loader × น้ำหนักบรรทุกมาตรฐาน · ไม่นับที่ขายให้คนนอก</td></tr>
+<tr><td>Raw material preparation</td><td>Weigh feeder หรือเครื่องชั่ง</td></tr>
+<tr><td>Raw meal preparation</td><td>รวมวัตถุดิบแต่ละตัวที่ป้อนเข้าระบบ ลบความชื้น</td></tr>
+<tr><td>Clinker production</td><td>A) Raw meal ที่ใช้ ÷ raw meal–clinker factor (1.44–1.57) หรือ<br>B) Kiln feed ÷ kiln feed–clinker factor (1.55–1.65)<br>สองวิธีต้องได้ผลเท่ากัน</td></tr>
+<tr><td>Cement grinding / blending</td><td>รวมวัตถุดิบแต่ละตัวที่ป้อนเข้าหม้อบด ลบความชื้น</td></tr>
+</table></div>
+<div class="box warn"><b class="t">เรื่อง Clinker ที่ต้องระวัง</b>
+<ul><li>Clinker ที่ไม่ได้คุณภาพ (off-specification) <b>นับ</b> รวมใน production volume</li>
+<li>ฝุ่น Kiln (kiln dust, bypass dust) <b>ไม่นับ</b></li></ul></div>
+
+<h2>3. ตัวอย่าง Cement production volume</h2>
+<div class="tbl"><table>
+<tr><th>รายการ</th><th class="num">ตัน (แห้ง)</th></tr>
+<tr><td>Clinker consumed</td><td class="num">99,000</td></tr>
+<tr><td>+ Gypsum consumed</td><td class="num">6,000</td></tr>
+<tr><td>+ GBFS (slag) consumed</td><td class="num">1,000</td></tr>
+<tr><td>+ High grade limestone consumed</td><td class="num">4,000</td></tr>
+<tr class="sum"><td>= Cement grinding volume (ผ่านหม้อบด)</td><td class="num">110,000</td></tr>
+<tr><td>+ Fly ash consumed (ผสมทีหลัง)</td><td class="num">15,000</td></tr>
+<tr><td>+ Ground slag purchased consumed</td><td class="num">7,000</td></tr>
+<tr><td>+ Cement purchased / transferred consumed</td><td class="num">5,000</td></tr>
+<tr class="sum"><td>= Cement production volume</td><td class="num">137,000</td></tr>
+</table></div>
+
+<h2>4. Factor คืออะไร</h2>
+<p><b>Factor</b> = อัตราส่วน "ใช้เท่าไหร่ ต่อ ผลิตได้เท่าไหร่" ใช้แปลงต้นทุนต่อตันของแต่ละขั้น ให้เป็น <b>ต่อตัน Clinker</b> หรือ <b>ต่อตันปูน</b> เพื่อให้บวกกันได้</p>
+<div class="card">
+<b>ตัวอย่าง factor ถึง Clinker (จากสไลด์)</b>
+<div class="tbl"><table>
+<tr><th>ขั้น</th><th class="num">Factor</th><th>อ่านว่า</th></tr>
+<tr><td>Raw material extraction</td><td class="num">1.667</td><td>ต้องขุดหิน 1.667 ตัน เพื่อได้ Clinker 1 ตัน</td></tr>
+<tr><td>Raw material preparation</td><td class="num">1.644</td><td>ต้องย่อยหิน 1.644 ตัน ต่อ Clinker 1 ตัน</td></tr>
+<tr><td>Raw meal preparation</td><td class="num">1.619</td><td>ต้องใช้ Raw meal 1.619 ตัน ต่อ Clinker 1 ตัน</td></tr>
+<tr><td>Clinker production</td><td class="num">1.000</td><td>ตัวมันเอง</td></tr>
+</table></div>
+ทำไม &gt; 1? เพราะตอนเผา หินปูน (CaCO₃) ปล่อย CO₂ ออกไป น้ำหนักจึงหายไประหว่างทาง</div>
+
+<h2>5. Clinker factor production (ตัวชี้วัดเชิงกลยุทธ์)</h2>
+<div class="formula">Clinker factor production = (Clinker ที่ใช้ + ปูนที่ซื้อ/รับโอนมาผสม × clinker factor ของปูนนั้น) ÷ Cement production volume</div>
+<p>จากตัวอย่างข้างบน: (99,000 + 5,000 × 95%) ÷ 137,000 = 103,750 ÷ 137,000 = <b>75.7%</b></p>
+<p>แปลว่า ปูน 1 ตันมี Clinker อยู่ประมาณ 0.757 ตัน ส่วนที่เหลือคือยิปซัม slag fly ash หินปูน ฯลฯ ตัวเลขนี้ <b>ยิ่งต่ำยิ่งดี</b> ในแง่ต้นทุนและ CO₂ (ตราบที่คุณภาพปูนยังได้) เพราะ Clinker คือส่วนที่แพงที่สุด จึงเป็นตัวชี้วัดที่รายงานใน GMR</p>
+<div class="box memo"><b class="t">🧠 ท่องจำ</b>
+<ul><li>Factor ถึง Clinker: ยิ่งต้นน้ำ ยิ่ง &gt; 1 (หินหายเป็น CO₂ ระหว่างเผา)</li>
+<li>Clinker factor ถึงปูน: &lt; 1 (เพราะผสมของอื่นเข้าไป) ตัวอย่าง 0.757–0.807</li></ul></div>
+`,
+  quiz:[
+    {q:'Production volume ของ Main cost center โดยทั่วไปวัดที่ไหน',o:['ทางออก (output) เสมอ','ทางเข้า (input) ของ cost center นั้น ยกเว้น Raw material extraction','ที่คลังสินค้า','ที่ Shipping'],a:1,e:'HARP วัดที่ input ของ cost center (ยกเว้น Raw material extraction) แบบแห้ง และหักส่วนที่ขายเป็นของพลอยได้'},
+    {q:'Kiln dust / bypass dust นับรวมใน Clinker production volume หรือไม่',o:['นับ','ไม่นับ','นับครึ่งหนึ่ง','นับเฉพาะที่ขายได้'],a:1,e:'ฝุ่น Kiln ไม่นับ แต่ Clinker ที่ไม่ได้คุณภาพ (off-spec) นับ'},
+    {q:'Factor ของ Raw material extraction = 1.667 หมายความว่าอะไร',o:['หิน 1 ตันได้ Clinker 1.667 ตัน','ต้องใช้หิน 1.667 ตันเพื่อได้ Clinker 1 ตัน','ต้นทุนเพิ่ม 66.7%','ความชื้น 66.7%'],a:1,e:'Factor = อัตราการใช้ต่อการผลิต น้ำหนักหายไปเพราะ CO₂ และความชื้น'},
+    {q:'Clinker consumed 80,000 t, ไม่มีปูนซื้อมาผสม, Cement production volume 100,000 t → Clinker factor production เท่าไหร่',o:['80%','125%','20%','100%'],a:0,e:'80,000 ÷ 100,000 = 80%'},
+    {q:'Clinker 99,000 t + ปูนซื้อมาผสม 5,000 t (clinker factor 95%) · Cement production 137,000 t → Clinker factor production',o:['72.3%','75.7%','75.9%','76.6%'],a:1,e:'(99,000 + 5,000 × 0.95) ÷ 137,000 = 103,750 ÷ 137,000 = 75.7%'},
+    {q:'ทำไม factor ของขั้นก่อน Clinker ถึงมากกว่า 1',o:['เพราะต้นทุนสูง','เพราะน้ำหนักหายไปเป็น CO₂ (และความชื้น) ระหว่างกระบวนการ','เพราะนับซ้ำ','เพราะเป็นข้อกำหนดของ SAP'],a:1,e:'หินปูนปล่อย CO₂ ตอนเผา จึงต้องใช้วัตถุดิบมากกว่า 1 ตัน เพื่อได้ Clinker 1 ตัน'},
+    {q:'Factor ใช้ทำอะไรในรายงานต้นทุน',o:['คำนวณภาษี','แปลงต้นทุนต่อตันของแต่ละขั้นให้เป็นต่อตัน Clinker/ปูน เพื่อบวกกันได้','คำนวณค่าเสื่อม','ตั้งราคาขาย'],a:1,e:'ต้นทุนต่อตันของแต่ละขั้นมีหน่วยไม่เหมือนกัน factor ทำให้เป็นหน่วยเดียวกันแล้วบวกได้'}
+  ]},
+
+/* ---------------- บทที่ 7 ---------------- */
+{ id:'c7', title:'Cost per ton (15A): ประกอบร่างเป็นต้นทุนปูน 1 ตัน', min:35,
+  body:`
+<p class="lead">บทนี้คือหัวใจ: เอาทุกบทที่ผ่านมามารวมกันเป็นตัวเลขเดียว "ปูน 1 ตันต้นทุนเท่าไหร่"</p>
+
+<h2>1. สูตร 3 ขั้น</h2>
+<div class="formula">
+① ต้นทุนต่อตันของแต่ละขั้น × factor = ต้นทุนต่อตัน <b>Clinker</b> ของขั้นนั้น<br>
+② รวมทุกขั้นถึง Clinker × <b>clinker factor</b> = ต้นทุน Clinker ต่อตัน <b>ปูน</b><br>
+③ + ต้นทุนบดปูนต่อตัน + วัตถุดิบที่ใช้ตรงในหม้อบด = <b>Cost per ton cement</b>
+</div>
+
+<h2>2. ตัวอย่างเต็มจากสไลด์ (USD)</h2>
+<div class="tbl"><table>
+<tr><th>ขั้น</th><th class="num">Cost</th><th class="num">Tons</th><th class="num">$/t ขั้นนั้น</th><th class="num">× Factor</th><th class="num">= $/t Clinker</th></tr>
+<tr><td>Raw material extraction</td><td class="num">75,700</td><td class="num">73,000</td><td class="num">1.04</td><td class="num">1.667</td><td class="num">1.73</td></tr>
+<tr><td>Raw material preparation</td><td class="num">54,313</td><td class="num">72,000</td><td class="num">0.75</td><td class="num">1.644</td><td class="num">1.24</td></tr>
+<tr><td>Raw meal preparation</td><td class="num">106,840</td><td class="num">65,000</td><td class="num">1.64</td><td class="num">1.619</td><td class="num">2.66</td></tr>
+<tr><td>Clinker production</td><td class="num">567,659</td><td class="num">42,000</td><td class="num">13.52</td><td class="num">1.000</td><td class="num">13.52</td></tr>
+<tr class="sum"><td colspan="5">Cost per ton Clinker</td><td class="num">19.15</td></tr>
+</table></div>
+<div class="tbl"><table>
+<tr><th>ต่อไปถึงปูน</th><th class="num">$/t ปูน</th></tr>
+<tr><td>Clinker 19.15 × clinker factor 0.8067</td><td class="num">15.44</td></tr>
+<tr><td>+ Cement grinding/blending (167,400 ÷ 60,000 t)</td><td class="num">2.79</td></tr>
+<tr><td>+ Raw material ที่ใช้ตรงในหม้อบดปูน</td><td class="num">0.16</td></tr>
+<tr class="sum"><td>= Cost per ton cement</td><td class="num">18.39</td></tr>
+</table></div>
+<p style="font-size:14px;color:var(--mute)">*ตัวเลข "Cost" ในตารางนี้ใช้ Actual cost ตามสไลด์ (ไม่รวมค่าเสื่อม) จึงต่างจาก COGP ในบทที่ 5 เล็กน้อย หลักการคูณ factor แล้วบวกเหมือนกันทุกบรรทัดในรายงาน</p>
+
+<h3>บรรทัด "วัตถุดิบที่ใช้ตรงในหม้อบด" คืออะไร</h3>
+<p>หินปูนบางส่วนไม่ได้ไปทำ Clinker แต่ถูกส่งไปผสมในหม้อบดปูนโดยตรง เช่นขุด 5,374 ตันใช้ในหม้อบด จากปูน 60,000 ตัน → raw material factor ≈ 0.09 · ต้นทุน 1.04 × 0.09 ≈ 0.09 $/t ปูน (บวกกับขั้นย่อยอีก 0.07 → รวม 0.16)</p>
+
+<h2>3. 15A รวมอะไร / ไม่รวมอะไร</h2>
+<div class="tbl"><table>
+<tr><th>✔ รวม</th><th>✘ ไม่รวม</th></tr>
+<tr><td>ต้นทุนจริงรวม provisions<br>ทุก Type of cost ของ 5 Main cost center<br>Auxiliary (กระจายใน Clinker 70% / Cement grinding 30%)<br>ค่าเสื่อมของแต่ละขั้น</td><td>มูลค่าที่รับมาจากสต็อกของขั้นก่อน (กันนับซ้ำ)<br>Clinker/ปูนที่ซื้อหรือรับโอนจากโรงงานอื่น (รวมค่าขนส่งระหว่างโรง)</td></tr>
+</table></div>
+<ul>
+<li>คิดจาก <b>ตัน Clinker และตันปูนที่ผลิตเอง</b></li>
+<li>เจ้าของรายงาน: <b>Plant manager</b> และ <b>Technical director</b></li>
+<li>15A ไม่ใช่ภาพเต็ม: ถ้าจะรวมของที่ซื้อ/รับโอนมาด้วย ต้องดู "cost of cement processed"</li>
+<li>ล่างสุดของรายงานมีบรรทัด <b>Maintenance cost per ton</b> (รวมจาก Type of cost ที่ติด M)</li>
+</ul>
+
+<h2>4. 15A ไปโผล่ใน GMR อย่างไร</h2>
+<p>ตัวเลขจาก 15A ถูกส่งต่อไปยัง GMR (General Management Report) เช่น</p>
+<ul>
+<li>Clinker production 42,000 t ÷ 1,000 → แสดงใน GMR เป็น <b>42</b> (kt)</li>
+<li>Cement production 60,000 t ÷ 1,000 → <b>60</b> (kt)</li>
+<li>Clinker factor 0.807 × 100 → <b>80.7%</b></li>
+</ul>
+
+<div class="box work"><b class="t">💼 ลองใช้กับงานจริง</b>
+เวลาทำ YTD หรือ MTD ของต้นทุนต่อตัน ให้ใช้ "เงินรวมทั้งช่วง ÷ ตันรวมทั้งช่วง" ไม่เอาค่าต่อตันรายวันมาเฉลี่ย ตรงกับหลัก cost per ton ของ HARP: <b>รวมตัวตั้ง รวมตัวหาร แล้วหารครั้งเดียว</b></div>
+
+<div class="box memo"><b class="t">🧠 ท่องจำ</b> "<b>คูณ factor → รวมถึง Clinker → คูณ clinker factor → บวกบดปูน → บวกวัตถุดิบตรง</b>"</div>
+`,
+  quiz:[
+    {q:'Raw meal preparation มีต้นทุน 1.50 $/t และ factor 1.6 → คิดเป็นกี่ $/t Clinker',o:['0.94','2.40','3.10','1.50'],a:1,e:'1.50 × 1.6 = 2.40 $/t Clinker'},
+    {q:'ต้นทุนรวมถึง Clinker = 20.00 $/t clin, clinker factor 0.80, บดปูน 3.00 $/t, วัตถุดิบตรง 0.20 $/t → Cost per ton cement',o:['23.20','19.20','16.00','25.00'],a:1,e:'20.00 × 0.80 = 16.00 + 3.00 + 0.20 = 19.20 $/t ปูน'},
+    {q:'ทำไมต้องคูณต้นทุน Clinker ต่อตันด้วย clinker factor (< 1) ก่อนบวกต้นทุนบดปูน',o:['เพื่อลดภาษี','เพราะปูน 1 ตันใช้ Clinker ไม่ถึง 1 ตัน','เพราะ Clinker มีความชื้น','เพื่อปัดเศษ'],a:1,e:'ปูน 1 ตันมี Clinker แค่ราว 0.75–0.81 ตัน ส่วนที่เหลือเป็นวัสดุผสมอื่น'},
+    {q:'ข้อใด "ไม่" อยู่ในรายงาน 15A',o:['Auxiliary ที่เทเข้า Clinker production','ค่าเสื่อมของแต่ละ Main cost center','ปูนที่ซื้อมาจากโรงงานอื่น','Provisions'],a:2,e:'15A คิดจากของที่ผลิตเอง ของที่ซื้อ/รับโอนมาไม่รวม (ต้องดู cost of cement processed)'},
+    {q:'ใครเป็นเจ้าของรายงาน cost per ton (15A)',o:['ฝ่ายขาย','Plant manager และ Technical director','HR','ผู้สอบบัญชี'],a:1,e:'15A เป็นเครื่องมือติดตามผลงานด้านต้นทุนของโรงงาน เจ้าของคือ Plant manager และ Technical director'},
+    {q:'Clinker production volume ใน 15A = 42,000 t จะแสดงใน GMR เป็นเท่าไหร่',o:['42,000','42','4.2','420'],a:1,e:'GMR แสดงเป็นพันตัน (kt) จึงหาร 1,000 = 42'},
+    {q:'ค่าเชื้อเพลิงวันที่ 1 = 500 บาท/ตัน (ผลิต 1,000 t), วันที่ 2 = 700 บาท/ตัน (ผลิต 3,000 t) ต้นทุนเฉลี่ย 2 วันแบบถูกหลักคือเท่าไหร่',o:['600','650','675','700'],a:1,e:'เงินรวม = 500,000 + 2,100,000 = 2,600,000 ÷ 4,000 t = 650 บาท/ตัน (ไม่ใช่ (500+700)/2 = 600)'}
+  ]},
+
+/* ---------------- บทที่ 8 ---------------- */
+{ id:'c8', title:'ตัวชี้วัดพลังงาน & คน: kWh/t, manh/t, MJ/t, TSR, TEE', min:40,
+  body:`
+<p class="lead">นอกจากเงินแล้ว โรงงานยังวัด "ปริมาณที่ใช้ต่อตัน" ด้วยตรรกะเดียวกับ cost per ton เรียกรวมว่า HTD</p>
+
+<h2>1. HTD คืออะไร</h2>
+<p><b>HTD = Harmonized Technical Data</b> ตัวชี้วัดการปฏิบัติงานที่ <b>ไม่ใช่ตัวเงิน</b> (มีข้อยกเว้นเล็กน้อย) นิยามเหมือนกันทุกโรงงาน เพื่อให้เทียบกันได้ว่าใครทำได้ดี แล้วเอาวิธีของโรงที่ดีที่สุดไปใช้ (benchmark)</p>
+<p>ครอบคลุม: Volumes, Capacities, Factors, Environmental, Maintenance, Plant performance, Specific consumptions, AFR, Personnel, Health & Safety, Specific costs · ใช้ในรายงานหลายตัว เช่น GMR และ ATR</p>
+
+<h2>2. "Cost per ton philosophy"</h2>
+<div class="formula">เปลี่ยน "เงิน" เป็น kWh / ชั่วโมงคน / MJ → คิดต่อตันของแต่ละ cost center → คูณ factor → บวกกัน</div>
+
+<h2>3. Specific electric energy consumption cement (kWh/t cem)</h2>
+<p>ตัวอย่างจากสไลด์ (แปลงเป็นต่อตันปูนแล้ว)</p>
+<div class="tbl"><table>
+<tr><th>Cost center</th><th class="num">kWh/t cem</th></tr>
+<tr><td>Raw material extraction</td><td class="num">0.9</td></tr>
+<tr><td>Raw material preparation</td><td class="num">2.0</td></tr>
+<tr><td>Raw meal preparation</td><td class="num">20.4</td></tr>
+<tr><td>Clinker production</td><td class="num">42.9</td></tr>
+<tr><td>Cement grinding/blending</td><td class="num">48.7</td></tr>
+<tr class="sum"><td>Total production (สไลด์แสดง)</td><td class="num">114.0</td></tr>
+<tr><td style="color:var(--mute)">Shipping station (ไม่นับ)</td><td class="num" style="color:var(--mute)">2.9</td></tr>
+</table></div>
+<ul>
+<li>ใช้ไฟมากสุดคือ <b>บดปูน</b> (~42%) และ <b>เผา Clinker</b> (~37%)</li>
+<li><b>ไม่ใช่</b> แค่ "kWh ทั้งโรงงาน ÷ ตันปูน" แต่คิดทีละ cost center แล้วแปลงด้วย factor</li>
+<li><b>ไม่รวม</b> Shipping station และหน่วยงานสนับสนุน</li>
+<li>ค่าเฉลี่ยกลุ่มปี 2011 ≈ 100 kWh/t cem</li>
+</ul>
+
+<h2>4. Personnel productivity (manh/t cem)</h2>
+<ul><li>นับชั่วโมงที่ <b>ทำงาน และ ได้รับค่าจ้าง</b> ทั้งสองเงื่อนไข ทั้งพนักงานเองและผู้รับเหมา</li>
+<li>ค่าทั่วไป ~0.3 manh/t cem · ส่วนใหญ่ต่ำกว่า 1</li></ul>
+
+<h2>5. ตัวชี้วัดความร้อน 4 ตัว</h2>
+<div class="tbl"><table>
+<tr><th>#</th><th>ตัวชี้วัด</th><th>หน่วย</th><th>ขอบเขต</th></tr>
+<tr><td>1</td><td>Specific thermal energy consumption kiln</td><td>MJ/t clin</td><td>เฉพาะระบบ Kiln</td></tr>
+<tr><td>2</td><td>Thermal Substitution Rate (TSR)</td><td>%</td><td>เฉพาะระบบ Kiln</td></tr>
+<tr><td>3</td><td>Specific actual cost of thermal energy</td><td>เงิน/t clin</td><td>Kiln + preparation</td></tr>
+<tr><td>4</td><td>Thermal Economic Equivalent (TEE)</td><td>%</td><td>Kiln + preparation</td></tr>
+</table></div>
+
+<h3>5.1 Specific thermal energy consumption</h3>
+<div class="formula">Thermal energy [MJ] = เชื้อเพลิงที่ใช้ [t] × NCV [MJ/t]  →  ÷ ตัน Clinker</div>
+<div class="tbl"><table>
+<tr><th>เชื้อเพลิง</th><th class="num">ตัน</th><th class="num">NCV (MJ/kg)</th><th class="num">GJ</th></tr>
+<tr><td>Coal</td><td class="num">5,000</td><td class="num">25</td><td class="num">125,000</td></tr>
+<tr><td>Tires</td><td class="num">500</td><td class="num">20</td><td class="num">10,000</td></tr>
+<tr><td>Wood</td><td class="num">200</td><td class="num">15</td><td class="num">3,000</td></tr>
+<tr><td>Diesel</td><td class="num">250</td><td class="num">40</td><td class="num">10,000</td></tr>
+<tr class="sum"><td>รวม</td><td class="num">5,950</td><td></td><td class="num">148,000</td></tr>
+</table></div>
+<p>148,000 GJ = 148,000,000 MJ ÷ Clinker 42,000 t = <b>3,524 MJ/t clin</b> (Dry process ~3,300 · Wet process ~5,500)</p>
+<ul><li>นับเชื้อเพลิง <b>ทุกชนิด</b> ที่ใช้ในระบบ Kiln รวมตอน heat-up และตอนทดลอง</li>
+<li>NCV ของถ่านหินวัด <b>หลังผ่านการเตรียม</b> (เช่น ที่ burner pipe)</li></ul>
+
+<h3>5.2 TSR</h3>
+<div class="formula">TSR (%) = AF [MJ] ÷ (TF [MJ] + AF [MJ]) × 100</div>
+<p>ตัวอย่าง: AF 13,000 · TF 135,000 → 13,000 ÷ 148,000 = <b>8.78%</b></p>
+<p>Biomass ที่เผาในโรงไฟฟ้าของโรงงานเอง <b>ไม่นับ</b> ใน TSR เพราะอยู่นอกระบบ Kiln</p>
+
+<h3>5.3 Specific actual cost of thermal energy</h3>
+<p>(ค่าเชื้อเพลิงดั้งเดิม + ทดแทนที่ใช้ใน Kiln + ค่าเตรียมและขนถ่าย) ÷ ตัน Clinker</p>
+
+<h3>5.4 TEE</h3>
+<div class="formula">TEE (%) = [ 1 − (Actual cost of thermal energy × (1 − TSR)) ÷ Actual cost of traditional thermal energy ] × 100</div>
+<p>แนวคิด: ถ้าไม่มี AF เลย ต้นทุนเชื้อเพลิงตามทฤษฎีจะเป็นเท่าไหร่ แล้วเทียบกับที่จ่ายจริง</p>
+<div class="tbl"><table>
+<tr><th>ตัวอย่างจากสไลด์</th><th class="num">RC</th></tr>
+<tr><td>A Traditional fuels – kiln</td><td class="num">57,958</td></tr>
+<tr><td>B Traditional fuels prep. & handling</td><td class="num">105,500</td></tr>
+<tr><td>C Alternative fuels – kiln (ติดลบ = ได้รับเงินค่ากำจัด)</td><td class="num">(5,739)</td></tr>
+<tr><td>D Alternative fuels prep. & handling</td><td class="num">101,600</td></tr>
+</table></div>
+<p>Actual cost ทั้งหมด = 57,958 + 105,500 − 5,739 + 101,600 = 259,319 · Traditional = 163,458<br>
+TEE = [1 − 259,319 × (1 − 0.0878) ÷ 163,458] × 100 ≈ <b>−44.7%</b></p>
+<ul><li>TEE <b>บวก</b> = ใช้ AF แล้วประหยัด · TEE <b>ลบ</b> = ใช้ AF แล้วแพงกว่า (ในตัวอย่างนี้ค่าเตรียม AF สูงมาก)</li>
+<li>ควรดูคู่กับตัวชี้วัด CO₂ เสมอ</li></ul>
+<div class="box work"><b class="t">💼 ลองใช้กับงานจริง</b>
+<ul><li>เปิดรายงานประจำวันของ Kiln ดูว่ามีตัวไหนบ้าง: STEC (MJ/t) คือตัวที่ 5.1 · TSR คือ 5.2 · ค่าเชื้อเพลิงต่อตัน Clinker คือแนวคิดของ 5.3</li>
+<li>TEE ช่วง MTD/YTD ต้องรวม A, B, C, D และ MJ ของทั้งช่วงก่อน แล้วค่อยเข้าสูตรครั้งเดียว ไม่เฉลี่ย TEE% รายวัน (หลักเดียวกับ cost per ton)</li></ul></div>
+
+<div class="box memo"><b class="t">🧠 ท่องจำ</b> "<b>ไฟ-คน-ร้อน</b>": kWh/t cem · manh/t cem · MJ/t clin — ไฟกับคนคิดต่อตัน <b>ปูน</b>, ความร้อนคิดต่อตัน <b>Clinker</b></div>
+`,
+  quiz:[
+    {q:'HTD (Harmonized Technical Data) คืออะไร',o:['รายงานภาษี','ตัวชี้วัดการปฏิบัติงานที่ไม่ใช่ตัวเงิน นิยามเหมือนกันทุกโรงงาน','งบประมาณ CAPEX','ระบบ SAP'],a:1,e:'HTD คือตัวชี้วัดเชิงปฏิบัติการ (ส่วนใหญ่ไม่ใช่ตัวเงิน) ใช้ benchmark ระหว่างโรงงาน'},
+    {q:'จากตารางตัวอย่าง Specific electric energy consumption cement คือเท่าไหร่',o:['116.9 kWh/t cem (รวม Shipping)','114 kWh/t cem (ไม่รวม Shipping)','48.7 kWh/t cem','100 kWh/t cem'],a:1,e:'ตัวชี้วัดนี้ไม่รวม Shipping station สไลด์แสดงผลรวม 114 kWh/t cem'},
+    {q:'Cost center ไหนใช้ไฟฟ้ามากที่สุดในตัวอย่าง',o:['Raw meal preparation','Clinker production','Cement grinding/blending','Raw material extraction'],a:2,e:'Cement grinding/blending 48.7 kWh/t (~42%) ตามด้วย Clinker production 42.9 (~37%)'},
+    {q:'เชื้อเพลิงรวม 150,000 GJ ผลิต Clinker 50,000 t → Specific thermal energy consumption เท่าไหร่',o:['3,000 MJ/t clin','300 MJ/t clin','30,000 MJ/t clin','3.0 MJ/t clin'],a:0,e:'150,000 GJ = 150,000,000 MJ ÷ 50,000 t = 3,000 MJ/t clin'},
+    {q:'AF 30,000 MJ, TF 70,000 MJ → TSR เท่าไหร่',o:['42.9%','30%','70%','23%'],a:1,e:'30,000 ÷ (30,000 + 70,000) = 30%'},
+    {q:'Biomass ที่เผาในโรงไฟฟ้าของโรงงานเอง นับใน TSR หรือไม่',o:['นับ','ไม่นับ เพราะอยู่นอกระบบ Kiln','นับครึ่งเดียว','นับถ้าเป็น AF'],a:1,e:'TSR และ Specific thermal energy consumption เป็นตัวชี้วัดเฉพาะระบบ Kiln'},
+    {q:'TEE ติดลบหมายความว่าอะไร',o:['ใช้ AF แล้วประหยัดกว่า','ใช้ AF แล้วต้นทุนรวมแพงกว่าการใช้เชื้อเพลิงดั้งเดิมอย่างเดียว','ไม่ได้ใช้ AF','คำนวณผิดแน่นอน'],a:1,e:'TEE วัดประโยชน์ทางเศรษฐกิจของ AF ถ้าติดลบ แปลว่าค่า AF + ค่าเตรียมทำให้แพงกว่า'},
+    {q:'Personnel productivity นับชั่วโมงแบบใด',o:['ชั่วโมงที่ทำงาน หรือ ได้รับค่าจ้าง อย่างใดอย่างหนึ่ง','ชั่วโมงที่ทำงาน และ ได้รับค่าจ้าง ทั้งสองอย่าง','เฉพาะชั่วโมง OT','เฉพาะพนักงานประจำ'],a:1,e:'ต้องเข้าทั้ง 2 เงื่อนไข worked AND paid ทั้งพนักงานเองและผู้รับเหมา'},
+    {q:'NCV ของถ่านหินที่ใช้ใน Kiln ควรวัดที่ไหน',o:['ที่ท่าเรือ','หลังผ่านการเตรียม เช่น ที่ burner pipe','ที่ supplier','ไม่ต้องวัด'],a:1,e:'วัดหลังการเตรียม (after preparation) เช่น ที่ burner pipe'}
+  ]},
+
+/* ---------------- บทที่ 9 ---------------- */
+{ id:'c9', title:'OEE & Availability: ตัวชี้วัดฝั่งเครื่องจักร', min:30,
+  body:`
+<p class="lead">Kiln availability และ overall performance เป็นเป้าหมายระดับองค์กร บทนี้จะทำให้อ่านตัวเลข NAI, PRI, OEE ในรายงานประจำวันได้</p>
+
+<h2>1. แบ่งเวลา 1 ปีออกเป็น 3 ก้อน</h2>
+<div class="formula">Calendar Time (CT) = Operating Time (OT) + Idle Time (IT) + Other Downtime (DT)</div>
+<div class="tbl"><table>
+<tr><th></th><th>Idle Time (IT)</th><th>Other Downtime (DT)</th></tr>
+<tr><td>สภาพเครื่อง</td><td>ไม่ได้เดิน แต่ <b>พร้อมสตาร์ตทันที</b></td><td>ไม่ได้เดิน และ <b>ไม่พร้อม</b> สตาร์ต</td></tr>
+<tr><td>สาเหตุ</td><td>มักเป็นเหตุ <b>ภายนอก</b> หรือการตัดสินใจของผู้บริหาร</td><td>มักเป็นเหตุ <b>ภายใน</b> ส่วนใหญ่เป็นเวลาซ่อมบำรุง</td></tr>
+<tr><td>ตัวอย่าง</td><td>ไม่มีความต้องการ (lack of demand), Silo เต็ม, ไฟจากภายนอกดับ, ภัยธรรมชาติ (ไม่ต้องซ่อม), นัดหยุดงาน, เปลี่ยนชนิดสินค้า</td><td>Bearing พัดลม Kiln เสีย, หยุดซ่อมตามแผน (PM shutdown), ไฟไหม้สายไฟ, ขาดวัตถุดิบ, ไฟภายในขัดข้อง, ปัญหาความปลอดภัย, มาตรฐานสิ่งแวดล้อม, การใช้ AFR</td></tr>
+</table></div>
+<div class="box memo"><b class="t">🧠 เกณฑ์ตัดสินข้อเดียว</b> "<b>ถ้าสั่งเดินตอนนี้ เดินได้เลยไหม โดยไม่ต้องซ่อมอะไร?</b>" ได้ = Idle · ไม่ได้ = Downtime</div>
+
+<h2>2. ดัชนี 4 ตัว</h2>
+<div class="tbl"><table>
+<tr><th>ดัชนี</th><th>สูตร</th><th>ความหมาย</th></tr>
+<tr><td><b>GAI</b> Gross Availability Index</td><td>OT ÷ CT</td><td>เวลาที่เดินจริง</td></tr>
+<tr><td><b>NAI</b> Net Availability Index</td><td>(OT + IT) ÷ CT</td><td>เวลาที่ "พร้อมเดิน" (ตัดเฉพาะ downtime) → สะท้อนฝีมือซ่อมบำรุง</td></tr>
+<tr><td><b>PRI</b> Production Rate Index</td><td>ผลผลิตจริง ÷ ผลผลิตที่ทำได้ตามทฤษฎี (ตาม BDP)</td><td>เดินเร็ว/ช้าแค่ไหนเทียบกำลังการผลิตมาตรฐาน</td></tr>
+<tr><td><b>QI</b> Quality Index</td><td>= 100% ตามนิยาม</td><td></td></tr>
+</table></div>
+<div class="formula">Gross OEE = PRI × GAI × QI &nbsp;&nbsp;|&nbsp;&nbsp; Net OEE = PRI × NAI × QI</div>
+
+<h2>3. ตัวอย่างจากสไลด์</h2>
+<div class="tbl"><table>
+<tr><th>เวลา</th><th class="num">ชั่วโมง</th><th class="num">วัน</th></tr>
+<tr><td>Operating time</td><td class="num">6,570</td><td class="num">273.75</td></tr>
+<tr><td>Idle time</td><td class="num">1,138</td><td class="num">47.45</td></tr>
+<tr><td>Other downtime</td><td class="num">1,050</td><td class="num">43.77</td></tr>
+<tr class="sum"><td>Calendar time</td><td class="num">8,760</td><td class="num">365</td></tr>
+</table></div>
+<ul>
+<li>GAI = 6,570 ÷ 8,760 = <b>75%</b></li>
+<li>NAI = (6,570 + 1,138) ÷ 8,760 = <b>88%</b></li>
+<li>PRI = <b>93%</b> (เสียไป 7% จากกระบวนการไม่นิ่ง)</li>
+<li>Gross OEE = 93% × 75% × 100% = <b>69.75%</b></li>
+<li>Net OEE = 93% × 88% × 100% = <b>81.84%</b></li>
+</ul>
+<ul>
+<li><b>Net OEE ≥ Gross OEE</b> เสมอ เพราะ Net ไม่หักเวลา idle</li>
+<li>Gross OEE = ประสิทธิภาพที่ <b>เกิดขึ้นจริง</b> · Net OEE = ประสิทธิภาพที่ <b>เป็นไปได้</b> (ถ้าไม่มีเหตุภายนอก)</li>
+<li>เป้าหมายใน Group Operational Roadmap: <b>NAI &gt; 90%</b> · <b>Net OEE &gt; 85%</b></li>
+</ul>
+
+<h2>4. BDP (Best Demonstrated Production)</h2>
+<p>BDP คืออัตราการผลิตมาตรฐานที่ใช้เป็นตัวหารของ PRI วิธีหา: ดูอัตราผลิต Clinker รายวันย้อนหลัง 24 เดือน หาช่วง 5 วันที่ดีที่สุด (ทุกวันไม่ต่ำกว่า 95% ของค่าสูงสุด และ downtime แต่ละวัน &lt; 0.5 ชม.) · Kiln ใหม่ใช้ design capacity · ถ้ามี CAPEX อัปเกรด หรือ PRI &gt; 100% ต่อเนื่อง ให้ทบทวน BDP</p>
+
+<div class="box work"><b class="t">💼 ลองใช้กับงานจริง</b>
+ถ้ารายงานประจำวันมี PRI, Net OEE, Gross OEE ลองหา BDP ของ Kiln ที่ใช้อยู่ แล้วคำนวณเอง: PRI = (Yield ÷ Operating time) ÷ BDP × 100</div>
+`,
+  quiz:[
+    {q:'Kiln หยุดเพราะ Silo ปูนเต็ม (เครื่องพร้อมเดิน) นับเป็นอะไร',o:['Other downtime','Idle time','Operating time','Quality loss'],a:1,e:'เครื่องพร้อมสตาร์ตทันที และเป็นเหตุภายนอก (logistic constraint) → Idle time'},
+    {q:'Kiln หยุดซ่อมตามแผนประจำปี (planned maintenance shutdown) นับเป็นอะไร',o:['Idle time','Other downtime','Operating time','ไม่นับ'],a:1,e:'เครื่องไม่พร้อมเดินทันที → Other downtime แม้จะเป็นการหยุดตามแผน'},
+    {q:'Kiln หยุดเพราะขาดวัตถุดิบ นับเป็นอะไร',o:['Idle time','Other downtime','Operating time','Quality loss'],a:1,e:'ตามสไลด์ lack of raw material เป็น Other downtime (ต่างจาก lack of demand ที่เป็น Idle)'},
+    {q:'OT 7,000 h, IT 760 h, DT 1,000 h (CT 8,760 h) → NAI ประมาณเท่าไหร่',o:['79.9%','88.6%','91.3%','80.0%'],a:1,e:'(7,000 + 760) ÷ 8,760 = 88.6%'},
+    {q:'PRI 95%, GAI 80%, NAI 90%, QI 100% → Net OEE เท่าไหร่',o:['76.0%','85.5%','90.0%','72.0%'],a:1,e:'Net OEE = PRI × NAI × QI = 0.95 × 0.90 × 1 = 85.5%'},
+    {q:'ข้อใดถูกต้องเสมอ',o:['Gross OEE ≥ Net OEE','Net OEE ≥ Gross OEE','Net OEE = Gross OEE','ไม่มีความสัมพันธ์'],a:1,e:'Net OEE ไม่หัก idle time จึงมากกว่าหรือเท่ากับ Gross OEE'},
+    {q:'เป้าหมาย Group Operational Roadmap สำหรับ NAI และ Net OEE คือข้อใด',o:['NAI > 80%, Net OEE > 75%','NAI > 90%, Net OEE > 85%','NAI > 95%, Net OEE > 90%','NAI > 85%, Net OEE > 80%'],a:1,e:'NAI > 90% และ Net OEE > 85%'},
+    {q:'ตัวหารของ PRI คืออะไร',o:['Design capacity เสมอ','ผลผลิตที่ทำได้ตามทฤษฎีจาก BDP','ผลผลิตเดือนก่อน','งบประมาณการผลิต'],a:1,e:'PRI = ผลผลิตจริง ÷ ผลผลิตตามทฤษฎีที่คำนวณจาก BDP'}
+  ]},
+
+/* ---------------- บทที่ 10 ---------------- */
+{ id:'c10', title:'Maintenance vs CAPEX: ค่าใช้จ่ายหรือสินทรัพย์?', min:40,
+  body:`
+<p class="lead">งานซ่อมบางงานลงเป็นค่าใช้จ่ายทันที บางงานกลายเป็นสินทรัพย์แล้วค่อยหักค่าเสื่อมหลายปี การแยกให้ถูกมีผลกับต้นทุนต่อตันโดยตรง</p>
+
+<h2>1. CAPEX คืออะไร</h2>
+<p><b>CAPEX (Capital Expenditure)</b> = รายจ่ายที่ผ่านเกณฑ์การบันทึกเป็นสินทรัพย์ (capitalization) และเพิ่มสินทรัพย์ถาวรของบริษัท → อยู่ในงบแสดงฐานะการเงิน และทยอยเป็น <b>Depreciation</b></p>
+<div class="tbl"><table>
+<tr><th>ประเภท</th><th>เกณฑ์มูลค่า</th><th>อายุใช้งาน</th></tr>
+<tr><td>Furniture, vehicles and tools</td><td>≥ USD 5,000 ต่อชิ้น</td><td>&gt; 1 ปี</td></tr>
+<tr><td>PPE อื่น ๆ (เครื่องจักร อาคาร ฯลฯ)</td><td>≥ USD 20,000 ต่อชิ้น</td><td>&gt; 1 ปี</td></tr>
+</table></div>
+<p>อายุใช้งานแนะนำ: อาคาร 20–35 ปี · เครื่องจักรหนัก 20–30 ปี · เครื่องจักรอื่น 10–20 ปี · เฟอร์นิเจอร์/ยานพาหนะ/เครื่องมือ 3–10 ปี · ที่ดินไม่หักค่าเสื่อม (ยกเว้นแหล่งแร่)</p>
+<p>มูลค่า CAPEX รวม: ราคาซื้อ + ค่าใช้จ่ายที่ทำให้พร้อมใช้งาน + ประมาณการค่ารื้อถอน/ฟื้นฟูพื้นที่ · ค่าแรงพนักงานเองรวมได้ถ้าทำโครงการ 100% ต่อเนื่องอย่างน้อย 12 เดือน</p>
+
+<h2>2. CAPEX 6 Types</h2>
+<div class="tbl"><table>
+<tr><th>Type</th><th>ชื่อ</th><th>ตัวอย่าง</th></tr>
+<tr><td>1</td><td>Expansion & diversification</td><td>สร้างโรงใหม่, เพิ่มกำลังบด, เพิ่ม Silo, อัปเกรด Kiln ทำ white clinker</td></tr>
+<tr><td>2</td><td>Social & safety</td><td>ระบบดับเพลิง, การ์ดป้องกันเครื่องจักร, รั้วและไฟรอบโรงงาน, ห้องพยาบาล</td></tr>
+<tr><td>3</td><td>Environmental</td><td>ระบบวัดก๊าซปล่อง, เปลี่ยน EP เป็น bag-house, SO₂ scrubber, ระบบบำบัดน้ำเสีย</td></tr>
+<tr><td>4</td><td>Improvement of product quality</td><td>Separator ประสิทธิภาพสูงเพื่อความละเอียดตามตลาด, Kiln bypass ทำปูน low alkali</td></tr>
+<tr><td>5</td><td>Rationalization</td><td>VFD พัดลม ID-fan, เปลี่ยนเชื้อเพลิงเป็น pet-coke, ระบบรับ AFR, de-bottlenecking</td></tr>
+<tr><td>6</td><td>Replacement</td><td>เปลี่ยนชิ้นส่วนหลักเพื่อรักษากำลังการผลิต → ลดค่าซ่อมในอนาคต</td></tr>
+</table></div>
+<p>Type 1 = เพิ่มกำลัง/ตลาด · Type 2–6 = รักษากำลังการผลิตและความสามารถในการแข่งขัน · ถ้าโครงการมีหลายเหตุผล ให้ดู "<b>ตัวขับหลัก</b>" (อะไรเริ่มโครงการ, ส่วนไหนใช้เงินมากสุด, ถ้าไม่อนุมัติอะไรเสียหายมากสุด, มีข้อบังคับด้านความปลอดภัย/สิ่งแวดล้อมหรือไม่)</p>
+<div class="box memo"><b class="t">🧠 ท่องจำ 6 Types</b> "<b>ขยาย–ปลอดภัย–สิ่งแวดล้อม–คุณภาพ–ประหยัด–แทนของเดิม</b>"</div>
+
+<h2>3. Maintenance expenditure: ไม่เคยเป็น CAPEX</h2>
+<p>ค่าซ่อมบำรุงปกติรายวัน สัปดาห์ เดือน ปี และ <b>วัสดุซ่อม ลงเป็นค่าใช้จ่ายทันที</b> รวมถึงงานประจำที่ทำในช่วงหยุดซ่อมใหญ่ประจำปี เช่น</p>
+<ul><li>เปลี่ยน grate cooler plates</li><li>ซ่อม clinker crusher</li><li>เปลี่ยนอิฐทนไฟใน rotary kiln</li><li>เปลี่ยนถุงกรองใน bag-house</li><li>ซ่อม kiln nose ring</li></ul>
+
+<h2>4. งานซ่อมที่ "อาจ" เป็น Replacement CAPEX</h2>
+<p>HARP มี <b>List of maintenance activities qualifying for capitalization</b> ตัวอย่าง:</p>
+<div class="tbl"><table>
+<tr><th>Mechanical</th><th>Electrical</th></tr>
+<tr><td>เปลี่ยน Crusher housing/rotor · เปลี่ยน Kiln tyre, shell section · Mill end, mill shell · Roller ของ Vertical mill · Girth gear / Mill gear / Kiln gear (drive &gt; 1,000 kW)</td><td>เปลี่ยน Main transformer (&gt; 10,000 kVA) · Generator · LV distribution & MCC · ระบบควบคุม CCR · มอเตอร์ขับหลัก (Raw mill, Cement mill, Kiln ID-fan VSD, EP-fan)</td></tr>
+</table></div>
+<h3>Decision tree</h3>
+<div class="card">
+<ol>
+<li>อยู่ใน List หรือไม่? → ไม่อยู่ = <b>ค่าใช้จ่าย</b></li>
+<li>ใช้งานได้ &gt; 1 ปีหรือไม่? → ไม่ = <b>ค่าใช้จ่าย</b></li>
+<li>มูลค่า &gt; USD 20,000 (หรือ 5,000 สำหรับเฟอร์นิเจอร์/รถ/เครื่องมือ)? → ไม่ = <b>ค่าใช้จ่าย</b></li>
+<li>ผ่านครบ = <b>Capitalize</b> และถ้าของเก่าไม่ได้แยกบันทึกในทะเบียนสินทรัพย์ ต้อง <b>write-off</b> มูลค่าคงเหลือของของเก่าด้วย</li>
+</ol></div>
+<p><b>ตัวอย่าง:</b> หลังคา Kiln ถล่มจากพายุ เปลี่ยนใหม่ USD 168,000 (เครน 25,000 + หลังคา 143,000) Kiln ใช้มา 15 ปีจากอายุ 30 ปี → write-off ของเก่า 168,000 × 50% = <b>84,000</b> และ capitalize ของใหม่ <b>168,000</b> แล้วหักค่าเสื่อมตามอายุ</p>
+
+<h2>5. กรณีพิเศษ</h2>
+<h3>Wear parts: Wear Parts หรือ Maintenance Material?</h3>
+<p>ชิ้นส่วนที่สัมผัสวัตถุดิบโดยตรง สึกตามปริมาณผลิต: <b>Refractories, Grinding media, Liners, Chains</b> (เฉพาะ wet process) → บันทึกเป็น Type of cost "<b>Wear Parts</b>" · ชิ้นส่วนสึกหรออื่นนอกจากนี้ → "<b>Maintenance Material</b>"</p>
+<h3>Major spare parts: PPE หรือ Inventory?</h3>
+<p>อะไหล่ในคลังปกติเป็น Inventory (Parts and supplies) แต่ถ้าอยู่ใน List + มูลค่า &gt; USD 20,000 + ใช้ได้ &gt; 1 ปี + ผู้บริหารถือว่า <b>critical</b> → บันทึกเป็น PPE (Machines) ไม่หักค่าเสื่อมจนกว่าจะใช้ แต่ทดสอบ impairment ทุกปี</p>
+<h3>ห้าม capitalize</h3>
+<p>Training, Research, Software upgrade, Studies (reorganization, IT, strategy), ค่า start-up และ feasibility study, ค่าก่อนโครงการของโครงการที่ยกเลิก, ค่าย้ายพนักงาน, ค่า royalty/branding ของกลุ่ม</p>
+<h3>ช่วงของโครงการ</h3>
+<p>General (ศึกษาทั่วไป) → <b>expense</b> · Pre-project (ศึกษาเฉพาะ) → capitalize ถ้าไปต่อ / write-off ถ้ายกเลิก · Project + Testing → <b>capitalize</b> (อยู่ใน Construction in Progress) · Commercial use → เริ่ม <b>depreciation</b></p>
+
+<div class="box work"><b class="t">💼 ลองใช้กับงานจริง</b>
+ตอนจัดประเภทงานใน SAP PM ถ้าเจองานใหญ่อย่างเปลี่ยน girth gear หรือ kiln tyre ให้สงสัยไว้ก่อนว่าอาจเป็น CAPEX ไม่ใช่ค่าซ่อม ถ้าลงเป็นค่าซ่อมผิด Maintenance cost per ton เดือนนั้นจะพุ่งผิดปกติ ส่วนเกณฑ์มูลค่าเป็น USD ตามเอกสาร HARP ให้เช็กเกณฑ์ที่บริษัทใช้จริงเป็นเงินบาทกับฝ่ายบัญชี</div>
+`,
+  quiz:[
+    {q:'เกณฑ์ capitalize สำหรับเครื่องจักร (PPE ที่ไม่ใช่เฟอร์นิเจอร์/รถ/เครื่องมือ) ตาม HARP คือ',o:['≥ USD 5,000 และใช้ > 1 ปี','≥ USD 20,000 และใช้ > 1 ปี','≥ USD 1,000','≥ USD 50,000 และใช้ > 5 ปี'],a:1,e:'PPE ทั่วไป ≥ USD 20,000 ต่อชิ้น · เฟอร์นิเจอร์ รถ เครื่องมือ ≥ USD 5,000 · อายุใช้งาน > 1 ปีทั้งคู่'},
+    {q:'เปลี่ยนอิฐทนไฟใน Kiln ช่วงหยุดซ่อมใหญ่ประจำปี บันทึกอย่างไร',o:['CAPEX Type 6','ค่าใช้จ่าย (Wear Parts) ทันที','CAPEX Type 5','Construction in progress'],a:1,e:'เป็นงานซ่อมประจำแม้ทำช่วง shutdown ใหญ่ ไม่เคยเป็น CAPEX และ refractories ลงเป็น Wear Parts'},
+    {q:'ติดตั้ง VFD ให้พัดลม ID-fan เพื่อประหยัดไฟ เป็น CAPEX type ใด',o:['Type 1 Expansion','Type 3 Environmental','Type 5 Rationalization','Type 6 Replacement'],a:2,e:'Rationalization = เพิ่มประสิทธิภาพ/ลดต้นทุนพลังงาน โดยไม่เพิ่มกำลังการผลิต'},
+    {q:'เปลี่ยน Electrostatic precipitator เป็น bag-house filter เพื่อคุมฝุ่น เป็น type ใด',o:['Type 2 Social & safety','Type 3 Environmental','Type 4 Product quality','Type 5 Rationalization'],a:1,e:'ตัวอย่างในสไลด์จัดเป็น Environmental (Type 3)'},
+    {q:'Grinding media (ลูกบด) บันทึกเป็น Type of cost ใด',o:['Maintenance Material','Wear Parts','Raw Materials','CAPEX'],a:1,e:'Refractories, grinding media, liners, chains (wet process) → Wear Parts · wear parts อื่น → Maintenance Material'},
+    {q:'ค่าอบรมพนักงานสำหรับเครื่องจักรใหม่ capitalize ได้หรือไม่',o:['ได้ เพราะเกี่ยวกับโครงการ','ไม่ได้ Training อยู่ในรายการห้าม capitalize','ได้ถ้าเกิน USD 20,000','ได้ถ้าอยู่ช่วง testing'],a:1,e:'Training, Research, Studies, Software upgrades, Start-up costs ห้าม capitalize'},
+    {q:'หลังคา Kiln ราคาใหม่ USD 168,000 ใช้มาแล้ว 15 ปีจากอายุ 30 ปี ต้อง write-off ของเก่าเท่าไหร่',o:['168,000','84,000','0','56,000'],a:1,e:'168,000 × (15/30) = 84,000 write-off และ capitalize ของใหม่ 168,000'},
+    {q:'ค่าเสื่อมราคาของโครงการ CAPEX เริ่มเมื่อไหร่',o:['ตั้งแต่อนุมัติ','ช่วง Testing','เมื่อเริ่มใช้งานเชิงพาณิชย์ (Commercial use)','ตอนจ่ายเงินงวดแรก'],a:2,e:'ช่วง Project/Testing อยู่ใน Construction in Progress ค่าเสื่อมเริ่มเมื่อ Commercial use'}
+  ]},
+
+/* ---------------- บทที่ 11 ---------------- */
+{ id:'c11', title:'บทเสริม: Budget พื้นฐานสำหรับคนวางงบ', min:25,
+  body:`
+<p class="lead">สำหรับคนที่ต้องวางงบ บทนี้คือกรอบคิดจากเอกสาร เพื่อให้เข้าใจว่างบที่เราทำอยู่ตรงไหนของภาพใหญ่</p>
+
+<h2>1. Budget คืออะไร ใช้ทำอะไร</h2>
+<p><b>Budgeting</b> = กระบวนการระบุ รวบรวม สรุป และสื่อสารข้อมูลทั้งการเงินและไม่ใช่การเงิน เกี่ยวกับกิจกรรมในอนาคตขององค์กร เป็นส่วนหนึ่งของการวางแผนเพื่อไปถึงเป้าหมายระยะยาว</p>
+<p>Budget ใช้เพื่อ: <b>สื่อสาร</b> · <b>ประสาน</b> กิจกรรมและทรัพยากร · <b>จูงใจ</b> พนักงาน · <b>ประเมินผล</b> · <b>บริหารเงินสด</b></p>
+<div class="box memo"><b class="t">🧠 ท่องจำ</b> "<b>สื่อ–ประสาน–จูงใจ–ประเมิน–เงินสด</b>"</div>
+
+<h2>2. Participative budgeting</h2>
+<p>กุญแจของงบที่ดีคือ <b>ให้คนทุกระดับมีส่วนร่วมตัดสินใจ</b> คนรู้สึกเป็นเจ้าของ จึงทำตามเป้าและอยู่ในงบได้ดีกว่า</p>
+<div class="box work"><b class="t">💼 ลองใช้กับงานจริง</b>
+ก่อนลงตัวเลขงบ ลองส่งรายการงานให้คนที่เกี่ยวข้องช่วยดูว่าขาดอะไร นี่คือ participative budgeting ตามตำรา</div>
+
+<h2>3. Master budget</h2>
+<div class="tbl"><table>
+<tr><th>Operating budgets (ใช้วางแผนงานประจำวัน)</th><th>Financial budgets (ผลทางการเงินที่คาดไว้)</th></tr>
+<tr><td>Sales budget (ทำก่อนเป็นอันดับแรก)<br>Production budget<br>Direct materials / labor budgets<br>Overhead budget<br>Selling & administrative expense budget</td><td>Budgeted income statement<br><b>Capital expenditures budget</b><br>Cash budget<br>Budgeted balance sheet</td></tr>
+</table></div>
+<p>Operating budgets เป็นฐานของ Financial budgets · <b>Sales budget ต้องทำก่อน</b> เพราะทุกอย่างขึ้นกับยอดขาย</p>
+
+<h2>4. Production budget</h2>
+<div class="formula">ปริมาณที่ต้องผลิต = ยอดขายที่คาด + สต็อกปลายงวดที่ต้องการ − สต็อกต้นงวด</div>
+<p><b>ตัวอย่าง:</b> คาดขายปูน 100,000 ตัน · อยากมีสต็อกปลายงวด 8,000 ตัน · ต้นงวดมี 5,000 ตัน → ต้องผลิต 100,000 + 8,000 − 5,000 = <b>103,000 ตัน</b></p>
+<p>ฝ่ายผลิตใช้ตัวเลขนี้วางแผนวัตถุดิบและกำลังคน</p>
+
+<h2>5. ใช้ความรู้จากบทก่อน ๆ วางงบ</h2>
+<ul>
+<li><b>Variable cost</b> → ตั้งงบจาก <b>ต้นทุนต่อตัน × แผนการผลิต</b> (เช่น เชื้อเพลิง ไฟฟ้า wear parts)</li>
+<li><b>Fixed cost</b> → ตั้งงบเป็น <b>รายการงาน/รายเดือน</b> (เช่น Third party services, ค่าจ้างผู้รับเหมาประจำ)</li>
+<li>แยก <b>Maintenance</b> ให้ชัด เพื่อให้ Maintenance cost per ton ตามได้</li>
+<li>งานที่เข้าข่าย CAPEX ไม่อยู่ใน operating budget แต่ไปอยู่ใน <b>Capital expenditures budget</b></li>
+</ul>
+
+<h2>6. ทำให้งบเกิดผลจริง</h2>
+<p>มี <b>Budget committee</b> ดูแลทุกขั้น (มี Controller อยู่ด้วย) งบอาจถูกปรับหลายรอบหลังอนุมัติ และติดตามผ่านรายงานเป็นระยะ ความสำเร็จขึ้นกับ 2 อย่าง: <b>สื่อสารชัดเจน</b> และ <b>ผู้บริหารระดับสูงสนับสนุน</b></p>
+`,
+  quiz:[
+    {q:'Budget ใน Master budget ตัวไหนต้องทำก่อน',o:['Production budget','Sales budget','Cash budget','Capital expenditures budget'],a:1,e:'Sales budget ทำก่อน เพราะงบอื่น ๆ ขึ้นกับยอดขายที่คาด'},
+    {q:'คาดขาย 50,000 t · สต็อกปลายงวดที่ต้องการ 4,000 t · สต็อกต้นงวด 6,000 t → ต้องผลิตเท่าไหร่',o:['52,000','48,000','60,000','50,000'],a:1,e:'50,000 + 4,000 − 6,000 = 48,000 ตัน'},
+    {q:'Capital expenditures budget อยู่ในกลุ่มใด',o:['Operating budgets','Financial budgets','ไม่อยู่ใน Master budget','Sales budget'],a:1,e:'Financial budgets ได้แก่ Budgeted income statement, Capital expenditures budget, Cash budget, Budgeted balance sheet'},
+    {q:'"Participative budgeting" หมายถึงอะไร',o:['ให้ผู้บริหารระดับสูงกำหนดเองทั้งหมด','ให้คนทุกระดับมีส่วนร่วมตัดสินใจเรื่องงบ','ใช้งบปีที่แล้วทั้งหมด','ให้ที่ปรึกษาภายนอกทำ'],a:1,e:'การมีส่วนร่วมทำให้รู้สึกเป็นเจ้าของ และทำตามเป้าได้ดีกว่า'},
+    {q:'ค่าเชื้อเพลิง Kiln ควรตั้งงบแบบใด',o:['ตั้งเท่าปีที่แล้ว','ต้นทุนต่อตัน × แผนการผลิต (เพราะเป็น variable)','รายการงานคงที่รายเดือน','ใส่ใน Capital expenditures budget'],a:1,e:'Variable cost ขึ้นกับปริมาณผลิต จึงควรผูกกับแผนการผลิต'},
+    {q:'ความสำเร็จในการใช้งบให้เกิดผลจริงขึ้นกับ 2 ปัจจัยใด',o:['ซอฟต์แวร์ดี และงบมาก','สื่อสารชัดเจน และผู้บริหารระดับสูงสนับสนุน','ลดคน และลดงาน','ทำงบทุกสัปดาห์ และตรวจสอบภายนอก'],a:1,e:'Clear communication และ support of top management'}
+  ]}
+];
+
+/* extra final-only questions (mixing chapters) */
+const FINAL_EXTRA = [
+  {q:'ค่าจ้างผู้รับเหมาซ่อมบำรุงประจำที่หม้อบดปูน ควรเป็นคู่ "ตะกร้า + ผลไม้" ใด',o:['Cement grinding/blending + Labor Expenses Maintenance Subcontracted Fixed','Plant management + Third Party Services','Clinker production + Outsourced Activities','Administration + Other Personnel Expenses'],a:0,e:'ตะกร้า = ขั้นตอนที่ทำงาน (Cement grinding) · ผลไม้ = ค่าแรงผู้รับเหมางานซ่อมแบบประจำ → Labor Expenses Maintenance Subcontracted Fixed (นับเป็น M)'},
+  {q:'ค่าใช้จ่ายของ Auxiliary 500,000 ถูกเท 70% เข้า Clinker production · Clinker ผลิตได้ 35,000 t → ส่วนนี้เพิ่มต้นทุน Clinker กี่บาท/ตัน',o:['10','14.29','4.29','20'],a:0,e:'500,000 × 70% = 350,000 ÷ 35,000 = 10 บาท/ตัน Clinker'},
+  {q:'ข้อใดเรียงถูก: บันไดต้นทุน',o:['Cash cost → Actual cost → Cost of goods produced','Actual cost → Cash cost → COGP','COGP → Cash cost → Actual cost','Variable → COGP → Fixed'],a:0,e:'Cash cost (+provisions) → Actual cost (+depreciation) → COGP'},
+  {q:'ตัวชี้วัดใดคิด "ต่อตัน Clinker"',o:['Specific electric energy consumption','Personnel productivity','Specific thermal energy consumption kiln','Cost per ton cement'],a:2,e:'ความร้อนคิดต่อตัน Clinker (MJ/t clin) ส่วนไฟฟ้าและคนคิดต่อตันปูน'},
+  {q:'Net OEE สะท้อนฝีมือฝ่ายซ่อมบำรุงได้ดีกว่า Gross OEE เพราะ',o:['Net OEE หักเวลา idle ที่มาจากเหตุภายนอกออกจากการลงโทษ','Net OEE ใช้ BDP ต่ำกว่า','Net OEE ไม่สน PRI','Net OEE คิดเฉพาะเดือนที่ดี'],a:0,e:'NAI นับ idle time เป็นเวลาที่ "พร้อม" จึงหักเฉพาะ downtime ที่ส่วนใหญ่เป็นเรื่องซ่อมบำรุง'},
+  {q:'โรงงานเพิ่ม fly ash ในปูนมากขึ้น (คุณภาพยังผ่าน) ผลที่น่าจะเกิดคือ',o:['Clinker factor สูงขึ้น ต้นทุนต่อตันปูนสูงขึ้น','Clinker factor ลดลง ต้นทุนต่อตันปูนมีแนวโน้มลดลง','ไม่มีผลกับอะไร','TSR สูงขึ้น'],a:1,e:'Clinker ในปูนน้อยลง → clinker factor ลด และ Clinker เป็นส่วนที่แพงที่สุด ต้นทุนต่อตันปูนจึงมีแนวโน้มลด'},
+  {q:'ข้อใดไม่ควรปรากฏใน Cost center ของฝ่ายผลิตเลย',o:['ค่าเก็บปูนผงใน Silo ของโรงงาน','เงินเดือนเจ้าหน้าที่บัญชีที่โรงงาน','ค่าคลังอะไหล่','ค่าแล็บควบคุมคุณภาพ'],a:1,e:'บัญชีที่โรงงานเป็น Administration ส่วนที่เหลือเป็นของฝ่ายผลิต'},
+  {q:'เปลี่ยน Girth gear ของ Kiln มูลค่าสูงเกินเกณฑ์ ใช้งานหลายปี และอยู่ใน List ควรทำอย่างไร',o:['ลงค่าซ่อม Maintenance Material','Capitalize เป็น Replacement CAPEX (Type 6) ตาม decision tree','ลง Wear Parts','ลง Other Cost Center Expenses'],a:1,e:'Girth gear อยู่ใน List of maintenance activities qualifying for capitalization ถ้าผ่านเกณฑ์มูลค่าและอายุ → Replacement CAPEX'}
+];
+
+const GLOSS = [
+ ['Cost center','ตะกร้าเก็บต้นทุน (cost collector) ของพื้นที่/กิจกรรมหนึ่ง'],
+ ['Cost element / Type of cost','ผลไม้ = ประเภทค่าใช้จ่าย (SAP เรียก cost element, HARP เรียก type of cost)'],
+ ['Main cost center','ตะกร้าหลัก 5 ใบ = ขั้นตอนผลิตจริง: ขุด → ย่อย → บด → เผา → บดปูน'],
+ ['Auxiliary cost center','ตะกร้างานสนับสนุนในโรงงาน (12 ใบ) เทเข้า Main แบบ 70/30'],
+ ['Pre-process cost center','ตะกร้าเตรียมวัตถุดิบเฉพาะ (7 ใบ) ดิน 2 · ไฟ 3 · ปูน 2 เทให้ตะกร้าที่ใช้ของจริง'],
+ ['Allocation','การเท/แบ่งต้นทุนจากตะกร้าหนึ่งไปอีกตะกร้า'],
+ ['Primary cost','ต้นทุนที่บันทึกลงตะกร้าโดยตรง'],
+ ['Secondary cost','ต้นทุนที่ถูกเทมาจากตะกร้าอื่น'],
+ ['70/30 rule','Auxiliary → 70% Clinker production, 30% Cement grinding/blending'],
+ ['HARP','Holcim Accounting and Reporting Principles คู่มือบัญชี/รายงานกลาง ตาม IFRS'],
+ ['HARP Matrix','ตารางบอกว่า Type of cost ใดบันทึกลง Cost center ใดได้'],
+ ['Support processes','Corporate Manufacturing, Corporate Logistics, Marketing & Sales, Administration'],
+ ['Corporate Manufacturing','งานสนับสนุนการผลิตส่วนกลาง (Engineering, R&D, CAPEX planning) ไม่เข้าต้นทุนผลิตของโรงงาน'],
+ ['Variable cost','ต้นทุนที่ขึ้นลงตามปริมาณผลิตในระยะสั้น'],
+ ['Fixed cost','ต้นทุนอื่นทั้งหมดที่ไม่ใช่ variable'],
+ ['Non-cash','Provisions, Depreciation & amortization, Write-offs'],
+ ['Provision','การตั้งสำรอง เช่น ฟื้นฟูเหมือง, อะไหล่ล้าสมัย, คดีความ'],
+ ['Maintenance expense','ค่าใช้จ่ายรักษา/ฟื้นฟูสภาพ และตรวจประเมินสภาพสินทรัพย์'],
+ ['Wear Parts','Refractories, grinding media, liners, chains — variable และนับเป็น maintenance'],
+ ['Cash cost','Variable cash cost + Fixed cash cost'],
+ ['Actual cost','Cash cost ± Provisions & write-offs'],
+ ['Cost of goods produced (COGP)','Actual cost + Depreciation (+ ของจากขั้นก่อน + allocation)'],
+ ['15A','รายงาน Clinker and Cement cost per ton'],
+ ['GMR','General Management Report รายงานผู้บริหารแบบมาตรฐาน'],
+ ['Factor','อัตราส่วน ใช้ ÷ ผลิต ใช้แปลงต้นทุนแต่ละขั้นเป็นต่อตัน Clinker/ปูน'],
+ ['Clinker factor production','สัดส่วน Clinker ในปูน เช่น 75.7%'],
+ ['HTD','Harmonized Technical Data ตัวชี้วัดปฏิบัติการที่ไม่ใช่ตัวเงิน นิยามกลาง'],
+ ['Specific electric energy consumption','kWh/t cem ไม่รวม Shipping'],
+ ['Personnel productivity','manh/t cem นับชั่วโมงที่ทำงานและได้ค่าจ้าง'],
+ ['Specific thermal energy consumption','MJ/t clin = เชื้อเพลิง × NCV ÷ ตัน Clinker'],
+ ['NCV','Net Calorific Value ค่าความร้อนสุทธิของเชื้อเพลิง'],
+ ['TSR','Thermal Substitution Rate = AF MJ ÷ (TF+AF) MJ'],
+ ['TEE','Thermal Economic Equivalent ประโยชน์ทางเงินของการใช้ AF แทน TF'],
+ ['TF / AF','Traditional fuels (เช่น ถ่านหิน) / Alternative fuels (เช่น RDF, ยาง, biomass)'],
+ ['OEE','Overall Equipment Efficiency = PRI × AI × QI'],
+ ['Idle time','หยุดแต่พร้อมสตาร์ตทันที (เหตุภายนอก)'],
+ ['Other downtime','หยุดและไม่พร้อมสตาร์ต (ส่วนใหญ่ซ่อมบำรุง)'],
+ ['GAI','Gross Availability Index = OT ÷ CT'],
+ ['NAI','Net Availability Index = (OT + IT) ÷ CT เป้า > 90%'],
+ ['PRI','Production Rate Index = ผลิตจริง ÷ ผลิตตามทฤษฎี (BDP)'],
+ ['BDP','Best Demonstrated Production อัตราผลิตมาตรฐานของ Kiln'],
+ ['CAPEX','รายจ่ายลงทุนที่บันทึกเป็นสินทรัพย์ ≥ USD 20,000 (หรือ 5,000) และใช้ > 1 ปี'],
+ ['CAPEX 6 Types','ขยาย · ปลอดภัย · สิ่งแวดล้อม · คุณภาพ · ประหยัด (Rationalization) · แทนของเดิม (Replacement)'],
+ ['Construction in Progress','CAPEX ที่เริ่มแล้วแต่ยังไม่เสร็จ ยังไม่หักค่าเสื่อม'],
+ ['Depreciation','ค่าเสื่อมราคา (non-cash)'],
+ ['Master budget','Operating budgets + Financial budgets'],
+ ['Production budget','ผลิต = ขายที่คาด + สต็อกปลายงวด − สต็อกต้นงวด'],
+ ['Operating profit','กำไรจากการดำเนินงาน ต้นทุนผลิตเกือบทั้งหมดอยู่เหนือเส้นนี้']
+];
+
+const PLAN = [
+ ['สัปดาห์ 1','บทที่ 0, 1, 2','ภาพรวม · ตะกร้า 3 ชนิด · การเทตะกร้า'],
+ ['สัปดาห์ 2','บทที่ 3, 4, 5','ผลไม้ · 5 แว่น · บันไดต้นทุน'],
+ ['สัปดาห์ 3','บทที่ 6, 7, 8','Volume & factor · Cost per ton · พลังงาน'],
+ ['สัปดาห์ 4','บทที่ 9, 10, 11','OEE · Maintenance vs CAPEX · Budget'],
+ ['สัปดาห์ 5','ทบทวน + Final exam','ทวนบัตรคำ แล้วสอบรวมให้ได้ ≥ 80%']
+];
+
+/* =========================================================
+   STATE
+   ========================================================= */
+const KEY='basic-finance-share-v1';
+let S={passed:{},best:{}};
+try{const raw=localStorage.getItem(KEY); if(raw){const p=JSON.parse(raw); if(p&&typeof p==='object'){S.passed=p.passed||{};S.best=p.best||{};}}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+
+const PASS=0.8;
+const $=s=>document.querySelector(s);
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* =========================================================
+   NAV + PROGRESS
+   ========================================================= */
+function progress(){
+  const done=CH.filter(c=>S.passed[c.id]).length;
+  const fin=S.passed.final?1:0;
+  const tot=CH.length+1;
+  $('#barFill').style.width=Math.round((done+fin)/tot*100)+'%';
+  $('#progTxt').textContent=`ผ่านแล้ว ${done}/${CH.length} บท`+(fin?' · Final ✓':'');
+}
+function renderNav(cur){
+  let h=`<a href="#home" class="${cur==='home'?'on':''}"><span class="n">⌂</span><span>หน้าแรก & แผนเรียน</span></a>`;
+  h+=`<div class="grp">บทเรียน</div>`;
+  CH.forEach((c,i)=>{h+=`<a href="#${c.id}" class="${cur===c.id?'on':''} ${S.passed[c.id]?'done':''}"><span class="n">${S.passed[c.id]?'✓':i}</span><span>${esc(c.title)}</span></a>`;});
+  h+=`<div class="grp">ทบทวน</div>`;
+  h+=`<a href="#glossary" class="${cur==='glossary'?'on':''}"><span class="n">Aa</span><span>บัตรคำศัพท์ (${GLOSS.length} คำ)</span></a>`;
+  h+=`<a href="#final" class="${cur==='final'?'on':''} ${S.passed.final?'done':''}"><span class="n">${S.passed.final?'✓':'★'}</span><span>Final exam (สอบรวม)</span></a>`;
+  $('#side').innerHTML=h;
+}
+
+/* =========================================================
+   VIEWS
+   ========================================================= */
+function viewHome(){
+  const done=CH.filter(c=>S.passed[c.id]).length;
+  let tiles=CH.map((c,i)=>{const b=S.best[c.id];const st=S.passed[c.id]?(b?`ผ่านแล้ว · ${b}%`:'ผ่านแล้ว'):(b!=null?`คะแนนล่าสุดดีสุด ${b}% (ยังไม่ถึง 80%)`:`~${c.min} นาที · ${c.quiz.length} ข้อ`);
+    return `<a class="tile ${S.passed[c.id]?'done':''}" href="#${c.id}"><div class="no">บทที่ ${i}</div><div class="tt">${esc(c.title)}</div><div class="st">${st}</div></a>`;}).join('');
+  $('#view').innerHTML=`
+  <div class="kicker">ปูพื้น Finance สำหรับฝ่ายผลิต (โรงงานปูนซีเมนต์)</div>
+  <h1>เรียนการเงินโรงงาน ฝั่งผลิต</h1>
+  <p class="lead">12 บท จากเอกสารอบรม <i>Basic Finance for cement manufacturing</i> เน้นฝั่งผลิต แต่ละบทมีแบบทดสอบหลังเรียน ผ่านที่ 80% แล้วจบด้วยการสอบรวม</p>
+  <div class="card"><b>ความคืบหน้า:</b> ผ่าน ${done} จาก ${CH.length} บท ${S.passed.final?'· Final exam ผ่านแล้ว 🎉':''}
+  <div style="font-size:14px;color:var(--mute);margin-top:4px">ความคืบหน้าบันทึกไว้ในเบราว์เซอร์เครื่องนี้เท่านั้น ถ้าเปิดจากเครื่องอื่นจะเริ่มนับใหม่ — ใช้ "ย้ายความคืบหน้า" ด้านล่างเพื่อยกมา</div></div>
+
+  <details class="card" id="syncBox"><summary style="cursor:pointer;font-weight:700">🔄 ย้ายความคืบหน้าข้ามเครื่อง / ข้ามลิงก์</summary>
+  <p style="font-size:15px;color:var(--ink2)">แต่ละที่ที่เปิด (ไฟล์ในเครื่อง, ลิงก์ GitHub, มือถือ) เก็บความคืบหน้าแยกกัน ใช้รหัสนี้ย้ายไปอีกที่ได้ ระบบจะรวมกับของเดิม ไม่ลบของที่มีอยู่</p>
+  <b>1) รหัสของที่นี่</b> — คัดลอกไปวางในอีกที่
+  <textarea id="codeOut" readonly rows="2" style="width:100%;font:13px Consolas,monospace;margin:6px 0;padding:8px;border:1.5px solid var(--line);border-radius:9px"></textarea>
+  <button class="btn ghost" id="copyCode">คัดลอกรหัส</button> <span id="copyMsg" style="font-size:14px;color:var(--ok)"></span>
+  <p style="margin-top:14px"><b>2) วางรหัสจากอีกที่</b></p>
+  <textarea id="codeIn" rows="2" placeholder="วางรหัสที่ขึ้นต้นด้วย BF1-" style="width:100%;font:13px Consolas,monospace;margin:6px 0;padding:8px;border:1.5px solid var(--line);border-radius:9px"></textarea>
+  <button class="btn" id="importBtn">นำเข้า</button> <span id="importMsg" style="font-size:14px"></span>
+  <p style="margin-top:14px"><b>3) หรือติ๊กเองว่าผ่านบทไหนแล้ว</b> <span style="font-size:14px;color:var(--mute)">(ใช้กับไฟล์เก่าที่ยังไม่มีปุ่มรหัส)</span></p>
+  <div id="manualTicks" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:4px 12px;font-size:15px"></div>
+  </details>
+
+  <h2>แผนเรียน (≈ 3 บท/สัปดาห์ บทละ 25–40 นาที)</h2>
+  <div class="tbl"><table class="plan"><tr><th>ช่วง</th><th>เรียน</th><th>หัวข้อ</th></tr>
+  ${PLAN.map(p=>`<tr><td>${p[0]}</td><td><b>${p[1]}</b></td><td>${p[2]}</td></tr>`).join('')}</table></div>
+  <p style="font-size:14.5px;color:var(--ink2)">ถ้าอยากเร็วกว่านี้: วันละ 1 บท จะจบทั้งหมดใน ~2 สัปดาห์</p>
+
+  <h2>วิธีเรียนให้จำได้จริง</h2>
+  <div class="card"><ol>
+  <li><b>อ่านบท</b> ดูกล่องสีเหลือง 🧺 (ภาพตะกร้า) และกล่องสีแดง 🧠 (ท่องจำ) เป็นพิเศษ</li>
+  <li><b>ทำแบบทดสอบท้ายบททันที</b> ข้อที่ผิดให้อ่านคำอธิบาย แล้วทำใหม่จนได้ ≥ 80%</li>
+  <li><b>วันถัดไป</b> ก่อนเริ่มบทใหม่ เปิด <a href="#glossary">บัตรคำ</a> ทวน 5 นาที (การทวนซ้ำข้ามวันช่วยให้จำได้นานกว่าอ่านรวดเดียว)</li>
+  <li>ลองหยิบไฟล์งานจริงของตัวเอง (เช่น ไฟล์งบ, รายงานต้นทุนต่อตัน) มาชี้ว่าแต่ละบรรทัดคือ "ตะกร้าไหน + ผลไม้อะไร"</li>
+  </ol></div>
+
+  <h2>บทเรียนทั้งหมด</h2>
+  <div class="grid">${tiles}
+  <a class="tile ${S.passed.final?'done':''}" href="#final"><div class="no">สอบรวม</div><div class="tt">Final exam</div><div class="st">${S.passed.final?'ผ่านแล้ว'+(S.best.final?' · '+S.best.final+'%':''):'25 ข้อสุ่มจากทุกบท'}</div></a></div>
+  `;
+  wireSync();
+}
+
+function exportCode(){const p=Object.keys(S.passed).filter(k=>S.passed[k]);return 'BF1-'+btoa(JSON.stringify({p:p,b:S.best}));}
+function wireSync(){
+  const out=document.getElementById('codeOut'); if(!out) return;
+  out.value=exportCode();
+  document.getElementById('copyCode').addEventListener('click',async()=>{
+    out.select(); let ok=false;
+    try{await navigator.clipboard.writeText(out.value);ok=true;}catch(e){try{ok=document.execCommand('copy');}catch(e2){}}
+    document.getElementById('copyMsg').textContent=ok?'คัดลอกแล้ว ✓':'คัดลอกไม่ได้ ให้กดค้างที่ช่องแล้วคัดลอกเอง';
+  });
+  document.getElementById('importBtn').addEventListener('click',()=>{
+    const m=document.getElementById('importMsg');
+    try{
+      const t=document.getElementById('codeIn').value.trim();
+      if(!t.startsWith('BF1-')) throw 0;
+      const o=JSON.parse(atob(t.slice(4)));
+      const ids=new Set(CH.map(c=>c.id).concat(['final']));
+      let n=0;
+      (o.p||[]).forEach(k=>{if(ids.has(k)&&!S.passed[k]){S.passed[k]=true;n++;}});
+      for(const k in (o.b||{})){ if(ids.has(k)) S.best[k]=Math.max(S.best[k]||0,Math.round(+o.b[k])||0); }
+      save(); progress(); renderNav('home');
+      m.style.color='var(--ok)'; m.textContent='นำเข้าแล้ว ✓ เพิ่ม '+n+' บท';
+      setTimeout(viewHome,900);
+    }catch(e){m.style.color='var(--bad)';m.textContent='รหัสไม่ถูกต้อง ลองคัดลอกใหม่ให้ครบ';}
+  });
+  const box=document.getElementById('manualTicks');
+  box.innerHTML=CH.map((c,i)=>`<label><input type="checkbox" data-id="${c.id}" ${S.passed[c.id]?'checked':''}> บทที่ ${i} ${esc(c.title)}</label>`).join('')
+    +`<label><input type="checkbox" data-id="final" ${S.passed.final?'checked':''}> Final exam</label>`;
+  box.querySelectorAll('input').forEach(cb=>cb.addEventListener('change',()=>{
+    if(cb.checked) S.passed[cb.dataset.id]=true; else delete S.passed[cb.dataset.id];
+    save(); progress(); renderNav('home'); out.value=exportCode();
+  }));
+}
+
+function viewChapter(i){
+  const c=CH[i];
+  const prev=i>0?`<a class="btn ghost" href="#${CH[i-1].id}">← บทที่ ${i-1}</a>`:`<a class="btn ghost" href="#home">← หน้าแรก</a>`;
+  const next=i<CH.length-1?`<a class="btn" href="#${CH[i+1].id}">บทที่ ${i+1} →</a>`:`<a class="btn" href="#final">ไป Final exam →</a>`;
+  $('#view').innerHTML=`
+  <div class="kicker">บทที่ ${i}</div>
+  <h1>${esc(c.title)}</h1>
+  <div class="meta">ใช้เวลาประมาณ ${c.min} นาที · แบบทดสอบ ${c.quiz.length} ข้อ ${S.passed[c.id]?' · <b style="color:var(--ok)">ผ่านแล้ว'+(S.best[c.id]?' ('+S.best[c.id]+'%)':'')+'</b>':''}</div>
+  ${c.body}
+  <div class="quiz" id="quiz"></div>
+  <div class="navrow">${prev}${next}</div>`;
+  if(c.id==='c5') drawWaterfall();
+  renderQuiz($('#quiz'),c.quiz,c.id,`แบบทดสอบหลังเรียน บทที่ ${i}`);
+}
+
+function drawWaterfall(){
+  const el=document.getElementById('wf1'); if(!el) return;
+  const max=86700;
+  const rows=[['Variable cash cost',0,42500,'#245c9e'],['Fixed cash cost',42500,33100,'#8a7356'],['= Cash cost',0,75600,'#d8232a'],['Provisions',75600,100,'#9a948b'],['Depreciation',75700,11000,'#9a948b'],['= COGP',0,86700,'#a8151b']];
+  el.innerHTML=rows.map(r=>`<div class="row"><div class="lab">${r[0]}</div><div class="track"><div class="seg" style="left:${r[1]/max*100}%;width:${Math.max(r[2]/max*100,0.6)}%;background:${r[3]}"></div></div><div class="val">${r[2].toLocaleString('en-US')}</div></div>`).join('');
+}
+
+function renderQuiz(root,qs,key,title){
+  const items=qs.map(q=>{const idx=shuffle(q.o.map((_,k)=>k));return {q,idx};});
+  let answered=0,correct=0;
+  root.innerHTML=`<div class="qhead"><h2 style="margin:10px 0">${esc(title)}</h2><span class="meta" id="qc_${key}" style="margin:0">ตอบแล้ว 0/${items.length}</span></div>
+  <p style="color:var(--ink2);font-size:15px">เลือกคำตอบได้ข้อละครั้ง ระบบจะเฉลยพร้อมเหตุผลทันที · ผ่านเมื่อได้ ≥ ${Math.round(PASS*100)}%</p>
+  ${items.map((it,n)=>`<div class="q" data-n="${n}"><div class="qt"><span class="qn">${n+1}.</span>${esc(it.q.q)}</div>
+    ${it.idx.map(k=>`<button class="opt" data-k="${k}">${esc(it.q.o[k])}</button>`).join('')}
+    <div class="exp"></div></div>`).join('')}
+  <div id="qr_${key}"></div>`;
+  root.querySelectorAll('.q').forEach(qe=>{
+    const it=items[+qe.dataset.n];
+    qe.querySelectorAll('.opt').forEach(b=>b.addEventListener('click',()=>{
+      const k=+b.dataset.k, ok=k===it.q.a;
+      qe.querySelectorAll('.opt').forEach(x=>{x.disabled=true; if(+x.dataset.k===it.q.a) x.classList.add('right');});
+      if(!ok) b.classList.add('wrong');
+      const ex=qe.querySelector('.exp');
+      ex.innerHTML=(ok?'<b class="ok">✓ ถูกต้อง</b> ':'<b class="no">✗ ยังไม่ใช่</b> ')+esc(it.q.e);
+      ex.classList.add('show');
+      answered++; if(ok) correct++;
+      document.getElementById('qc_'+key).textContent=`ตอบแล้ว ${answered}/${items.length} · ถูก ${correct}`;
+      if(answered===items.length) finish();
+    }));
+  });
+  function finish(){
+    const pct=Math.round(correct/items.length*100);
+    const pass=correct/items.length>=PASS;
+    S.best[key]=Math.max(S.best[key]||0,pct);
+    if(pass) S.passed[key]=true;
+    save(); progress(); renderNav(location.hash.slice(1)||'home');
+    const box=document.getElementById('qr_'+key);
+    box.innerHTML=`<div class="result ${pass?'pass':'fail'}"><b>${pass?'🎉 ผ่าน!':'เกือบแล้ว'}</b> ได้ ${correct}/${items.length} (${pct}%) ${pass?'':'— ต้องได้ ≥ 80% ลองอ่านคำอธิบายข้อที่ผิด แล้วทำใหม่'}
+      <div class="toggle-row"><button class="btn ghost" id="rt_${key}">ทำใหม่ (สลับตัวเลือก)</button></div></div>`;
+    document.getElementById('rt_'+key).addEventListener('click',()=>{renderQuiz(root,key==='final'?pickFinal():qs,key,title);root.scrollIntoView({behavior:'smooth'});});
+  }
+}
+
+function pickFinal(){
+  const pool=[];CH.forEach(c=>c.quiz.forEach(q=>pool.push(q)));
+  const main=shuffle(pool).slice(0,19);
+  return shuffle(main.concat(shuffle(FINAL_EXTRA).slice(0,6)));
+}
+function viewFinal(){
+  const ready=CH.filter(c=>S.passed[c.id]).length;
+  $('#view').innerHTML=`<div class="kicker">สอบรวม</div><h1>Final exam</h1>
+  <p class="lead">25 ข้อ สุ่มจากทุกบท + โจทย์ผสมหลายบท ผ่านที่ 80%</p>
+  ${ready<CH.length?`<div class="box warn">ตอนนี้ผ่านแล้ว ${ready}/${CH.length} บท ทำได้เลย แต่แนะนำให้ผ่านทุกบทก่อน</div>`:''}
+  <div class="quiz" id="quiz" style="border-top:0;margin-top:0"></div>`;
+  renderQuiz($('#quiz'),pickFinal(),'final','Final exam · 25 ข้อ');
+}
+
+function viewGloss(){
+  $('#view').innerHTML=`<div class="kicker">ทบทวน</div><h1>บัตรคำศัพท์</h1>
+  <p class="lead">กดที่บัตรเพื่อดูความหมาย ลองนึกคำตอบก่อนเปิด</p>
+  <input class="gsearch" id="gs" placeholder="ค้นหาคำ เช่น TSR, ตะกร้า, CAPEX">
+  <div class="toggle-row"><button class="btn ghost" id="gOpen">เปิดทั้งหมด</button><button class="btn ghost" id="gClose">ปิดทั้งหมด</button><button class="btn ghost" id="gShuf">สลับลำดับ</button></div>
+  <div class="flash" id="fl"></div>`;
+  let list=GLOSS.slice();
+  const draw=()=>{const q=($('#gs').value||'').toLowerCase();
+    $('#fl').innerHTML=list.filter(g=>(g[0]+' '+g[1]).toLowerCase().includes(q)).map(g=>`<div class="fc"><div class="term">${esc(g[0])}</div><div class="mean">${esc(g[1])}</div><div class="hint">แตะเพื่อดูความหมาย</div></div>`).join('')||'<p>ไม่พบคำนี้</p>';
+    document.querySelectorAll('.fc').forEach(f=>f.addEventListener('click',()=>f.classList.toggle('open')));};
+  $('#gs').addEventListener('input',draw);
+  $('#gOpen').addEventListener('click',()=>document.querySelectorAll('.fc').forEach(f=>f.classList.add('open')));
+  $('#gClose').addEventListener('click',()=>document.querySelectorAll('.fc').forEach(f=>f.classList.remove('open')));
+  $('#gShuf').addEventListener('click',()=>{list=shuffle(list);draw();});
+  draw();
+}
+
+/* =========================================================
+   ROUTER
+   ========================================================= */
+function route(){
+  const h=(location.hash||'#home').slice(1);
+  const i=CH.findIndex(c=>c.id===h);
+  renderNav(i>=0?h:(['final','glossary'].includes(h)?h:'home'));
+  if(i>=0) viewChapter(i);
+  else if(h==='final') viewFinal();
+  else if(h==='glossary') viewGloss();
+  else viewHome();
+  progress();
+  $('#side').classList.remove('open');
+  window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',route);
+$('#menuBtn').addEventListener('click',()=>$('#side').classList.toggle('open'));
+route();
+</script>
+</body>
+</html>
